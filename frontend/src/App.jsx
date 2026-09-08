@@ -65,13 +65,14 @@ function MainApp() {
   // Initialize Lenis Smooth Scrolling Engine synchronized with GSAP
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.6,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.5,
+      infinite: false,
     });
 
     lenis.on('scroll', ScrollTrigger.update);

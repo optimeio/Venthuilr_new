@@ -493,8 +493,9 @@ export default function HomePage({ onCheckout }) {
         },
         pin: true,
         anticipatePin: 1,
+        fastScrollEnd: true,
         animation: tween,
-        scrub: 0.8, // Crisp, ultra-smooth physical scrub
+        scrub: 1.0, // Silky smooth interpolation with Lenis
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           setScrollProgress(self.progress * 100);
