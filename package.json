@@ -1,22 +1,19 @@
 {
-    "name": "e-com-c-root",
+    "name": "venthulir",
     "version": "1.0.0",
-    "description": "Production ready e-commerce setup",
+    "description": "Venthulir Organic E-Commerce — Frontend + Backend",
     "private": true,
     "scripts": {
-        "install-all": "npm install --legacy-peer-deps && npm install --prefix client --legacy-peer-deps && npm install --prefix server --legacy-peer-deps",
-        "client": "cd client && npm run dev",
-        "admin": "cd client && npm run dev -- --mode admin",
-        "server": "cd server && npm start",
-        "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run admin\"",
-        "build": "npm run render-build",
-        "build-admin": "cd client && npm run build -- --mode admin",
-        "build-all": "node scripts/build-all.js",
-        "render-build": "npm run install-all && npm run build-all",
-        "start": "cd server && npm start"
+        "install-backend":  "npm install --prefix backend  --legacy-peer-deps",
+        "install-frontend": "npm install --prefix frontend --legacy-peer-deps",
+        "install-all":      "npm run install-backend && npm run install-frontend",
+        "backend":          "cd backend  && npm start",
+        "frontend":         "cd frontend && npm run dev",
+        "dev":              "concurrently \"npm run backend\" \"npm run frontend\"",
+        "build":            "cd frontend && npm run build",
+        "start":            "npm run backend"
     },
     "devDependencies": {
-        "concurrently": "^8.2.2",
-        "sharp": "^0.35.3"
+        "concurrently": "^8.2.2"
     }
 }

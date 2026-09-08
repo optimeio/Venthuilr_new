@@ -1,0 +1,138 @@
+.checkout-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  z-index: 1401;
+  width: min(900px, 95vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 36px;
+}
+
+.checkout-title { font-size: 1.5rem; color: var(--green-dark); margin-bottom: 28px; }
+
+.checkout-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 700px) {
+  .checkout-inner { grid-template-columns: 1fr 1.2fr; }
+}
+
+.checkout-section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.checkout-items { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.checkout-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.checkout-item-img {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--green-pale);
+  flex-shrink: 0;
+}
+.checkout-item-img img { width: 100%; height: 100%; object-fit: cover; }
+.checkout-img-ph { width: 100%; height: 100%; background: var(--green-pale); }
+.checkout-item-info { flex: 1; }
+.checkout-item-info p    { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+.checkout-item-info span { font-size: 0.78rem; color: var(--text-muted); }
+.checkout-item strong    { font-size: 0.85rem; font-weight: 700; color: var(--green-dark); }
+
+.checkout-totals { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.co-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--text-mid);
+}
+.co-total-row .discount { color: var(--green-light); }
+.co-total-row .free     { color: var(--green-light); font-weight: 700; }
+.co-total-row.grand     { font-weight: 700; font-size: 1rem; color: var(--text-dark); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; }
+
+.payment-badge {
+  background: var(--green-pale);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-mid);
+  text-align: center;
+}
+
+.checkout-form { display: flex; flex-direction: column; gap: 14px; }
+.co-field { display: flex; flex-direction: column; gap: 6px; }
+.co-field label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.co-field input {
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark);
+  background: var(--cream);
+  outline: none;
+  transition: var(--transition);
+}
+.co-field input:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(74,140,92,0.1); }
+
+.co-error { font-size: 0.82rem; color: #dc2626; background: #fef2f2; padding: 10px 14px; border-radius: var(--radius-sm); }
+
+.co-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 16px;
+  font-size: 1rem;
+}
+
+.co-auth-note { font-size: 0.78rem; color: var(--text-muted); text-align: center; }
+
+/* Placing / Success states */
+.checkout-placing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 60px 0;
+  color: var(--text-mid);
+}
+.checkout-placing .spin { color: var(--green-mid); animation: spin 1s linear infinite; }
+
+.checkout-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 0;
+  text-align: center;
+}
+.success-icon { color: var(--green-light); }
+.checkout-success h2  { font-size: 1.8rem; color: var(--green-dark); }
+.checkout-success p   { color: var(--text-mid); font-size: 0.95rem; }
+.order-id { font-size: 0.85rem; background: var(--green-pale); padding: 10px 20px; border-radius: 20px; color: var(--green-mid); font-weight: 600; }
+
+.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-3col { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr; gap: 12px; }
+@media (max-width: 400px) {
+  .form-2col, .form-3col { grid-template-columns: 1fr; }
+}
