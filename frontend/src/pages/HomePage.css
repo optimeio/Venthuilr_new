@@ -1054,14 +1054,9 @@
    4. PRODUCTS CATALOG (Search, Category Filters, Grid)
 ───────────────────────────────────────────────────────────── */
 .section-products {
-  padding: 40px 0;
+  padding: 64px 0;
   background-color: #ffffff;
-  overflow: hidden;
   position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .products-top-bar {
@@ -1070,7 +1065,7 @@
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .products-section-sub {
@@ -1139,27 +1134,31 @@
 .products-horizontal-wrapper {
   position: relative;
   width: 100%;
-  overflow: visible;
 }
 
 .products-horizontal-track {
   display: flex;
   flex-wrap: nowrap;
-  gap: 24px;
-  padding: 12px 0 18px;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  perspective: 1000px;
-  transition: none !important;
+  gap: 22px;
+  padding: 12px 4px 20px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.products-horizontal-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .product-horizontal-item {
   flex: 0 0 280px;
   max-width: 280px;
   min-width: 280px;
-  transform: translateZ(0);
+  scroll-snap-align: start;
 }
 
 /* Final Interactive "Explore All" Card */

@@ -459,58 +459,17 @@ export default function HomePage({ onCheckout }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [formStatus, setFormStatus] = useState('idle');
   
-  // Products Horizontal Track Ref, Section Ref & Progress State
-  const productsSectionRef = useRef(null);
+  // Products Horizontal Track Ref & Progress State
   const productsTrackRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth)
-  useEffect(() => {
-    const section = productsSectionRef.current;
-    const track = productsTrackRef.current;
-    if (!section || !track) return;
-
-    const ctx = gsap.context(() => {
-      const getScrollDistance = () => {
-        const trackWidth = track.scrollWidth;
-        const containerWidth = track.parentElement ? track.parentElement.clientWidth : section.clientWidth;
-        return -(trackWidth - containerWidth + 30);
-      };
-
-      const tween = gsap.to(track, {
-        x: getScrollDistance,
-        ease: 'none',
-        force3D: true
-      });
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: () => `+=${Math.max(window.innerHeight * 1.3, track.scrollWidth - window.innerWidth + 200)}`,
-        pin: true,
-        anticipatePin: 1,
-        animation: tween,
-        scrub: 0.6,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          setScrollProgress(self.progress * 100);
-        }
-      });
-    }, section);
-
-    return () => ctx.revert();
-  }, [filteredProducts]);
-
-  // GSAP Smooth Horizontal Scroll Navigation
+  // Smooth Horizontal Carousel Controls (No Scroll Hijacking)
   const scrollProducts = (direction) => {
     if (!productsTrackRef.current) return;
-    const cardWidth = 300;
-    const current = productsTrackRef.current.scrollLeft;
-    const target = direction === 'next' ? current + cardWidth * 1.5 : current - cardWidth * 1.5;
-    gsap.to(productsTrackRef.current, {
-      scrollLeft: target,
-      duration: 0.5,
-      ease: 'power2.out'
+    const scrollAmount = 340;
+    productsTrackRef.current.scrollBy({
+      left: direction === 'next' ? scrollAmount : -scrollAmount,
+      behavior: 'smooth'
     });
   };
 
@@ -944,9 +903,9 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. PRODUCTS CATALOG (GSAP Horizontal Scrolling Showcase)
+          3. PRODUCTS CATALOG (Smooth Horizontal Carousel Showcase)
       ───────────────────────────────────────────────────────────── */}
-      <section id="products" ref={productsSectionRef} className="section-products">
+      <section id="products" className="section-products">
         <div className="container">
           
           <div className="products-top-bar">
