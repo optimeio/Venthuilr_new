@@ -473,8 +473,8 @@ export default function HomePage({ onCheckout }) {
     const ctx = gsap.context(() => {
       const getScrollAmount = () => {
         const trackWidth = track.scrollWidth;
-        const containerWidth = section.clientWidth || window.innerWidth;
-        return -(trackWidth - containerWidth + 60);
+        const parentWidth = track.parentElement ? track.parentElement.clientWidth : window.innerWidth;
+        return -(trackWidth - parentWidth + 30);
       };
 
       const tween = gsap.to(track, {
@@ -487,11 +487,14 @@ export default function HomePage({ onCheckout }) {
         id: 'products-horizontal-scroll',
         trigger: section,
         start: 'top top',
-        end: () => `+=${Math.max(window.innerHeight * 1.5, track.scrollWidth - window.innerWidth + 350)}`,
+        end: () => {
+          const distance = track.scrollWidth - (track.parentElement ? track.parentElement.clientWidth : window.innerWidth);
+          return `+=${Math.max(1200, distance * 1.15)}`;
+        },
         pin: true,
         anticipatePin: 1,
         animation: tween,
-        scrub: 1.2, // Silky smooth momentum scrub
+        scrub: 0.8, // Crisp, ultra-smooth physical scrub
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           setScrollProgress(self.progress * 100);

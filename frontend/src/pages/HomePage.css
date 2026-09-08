@@ -1135,6 +1135,88 @@
   border-color: #15803d;
   transform: translateY(-1px);
 }
+.product-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #d4e2d8;
+  border-radius: 40px;
+  padding: 0 12px 0 34px;
+  height: 38px;
+  transition: all 0.22s ease;
+}
+
+.product-search-box:focus-within {
+  border-color: #143323;
+  box-shadow: 0 0 0 3px rgba(20, 51, 35, 0.08);
+}
+
+.product-search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.82rem;
+  color: #143323;
+  width: 140px;
+  font-family: inherit;
+}
+
+.product-search-box .search-icon {
+  position: absolute;
+  left: 10px;
+  color: #7b9484;
+  pointer-events: none;
+}
+
+.search-clear-btn {
+  background: transparent;
+  border: none;
+  color: #8fa697;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-clear-btn:hover {
+  color: #143323;
+}
+
+/* Category Filter Pills */
+.category-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.filter-pill-btn {
+  background: #f3f8f5;
+  border: 1px solid #d8e6dc;
+  color: #385140;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.filter-pill-btn:hover {
+  background: #e6f0e9;
+  color: #143323;
+  border-color: #bad3c2;
+}
+
+.filter-pill-btn.active {
+  background: #143323;
+  color: #ffffff;
+  border-color: #143323;
+  box-shadow: 0 4px 12px rgba(20, 51, 35, 0.18);
+}
 
 .products-horizontal-wrapper {
   position: relative;
@@ -1145,8 +1227,8 @@
 .products-horizontal-track {
   display: flex;
   flex-wrap: nowrap;
-  gap: 26px;
-  padding: 14px 0 20px 0;
+  gap: 24px;
+  padding: 8px 0 16px 0;
   will-change: transform;
   transform: translate3d(0, 0, 0);
   -webkit-backface-visibility: hidden;
