@@ -495,7 +495,7 @@ export default function HomePage({ onCheckout }) {
         anticipatePin: 1,
         fastScrollEnd: true,
         animation: tween,
-        scrub: 1.0, // Silky smooth interpolation with Lenis
+        scrub: 0.3, // Seamless 1:1 sync with Lenis lerp momentum
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           setScrollProgress(self.progress * 100);
