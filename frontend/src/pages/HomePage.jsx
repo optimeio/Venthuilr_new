@@ -459,102 +459,67 @@ export default function HomePage({ onCheckout }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [formStatus, setFormStatus] = useState('idle');
   
-  // Products Horizontal Track Ref & Progress State
+  // Products Horizontal Track Ref, Section Ref & Progress State
+  const productsSectionRef = useRef(null);
   const productsTrackRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Smooth Horizontal Carousel Controls (Arrow Buttons)
-  const scrollProducts = (direction) => {
-    if (!productsTrackRef.current) return;
-    const scrollAmount = 350;
-    const current = productsTrackRef.current.scrollLeft;
-    const maxScroll = productsTrackRef.current.scrollWidth - productsTrackRef.current.clientWidth;
-    const target = direction === 'next' 
-      ? Math.min(maxScroll, current + scrollAmount)
-      : Math.max(0, current - scrollAmount);
-
-    gsap.to(productsTrackRef.current, {
-      scrollLeft: target,
-      duration: 0.45,
-      ease: 'power2.out',
-      overwrite: 'auto'
-    });
-  };
-
-  // Convert Vertical Wheel Scroll smoothly into Horizontal Scroll
+  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth)
   useEffect(() => {
+    const section = productsSectionRef.current;
     const track = productsTrackRef.current;
-    if (!track) return;
+    if (!section || !track) return;
 
-    let targetScroll = track.scrollLeft;
+    const ctx = gsap.context(() => {
+      const getScrollAmount = () => {
+        const trackWidth = track.scrollWidth;
+        const containerWidth = section.clientWidth || window.innerWidth;
+        return -(trackWidth - containerWidth + 60);
+      };
 
-    const handleWheel = (e) => {
-      // If mostly vertical wheel scroll
-      if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
-        const maxScroll = track.scrollWidth - track.clientWidth;
-        if (maxScroll <= 0) return;
+      const tween = gsap.to(track, {
+        x: getScrollAmount,
+        ease: 'none',
+        force3D: true
+      });
 
-        const isAtEnd = track.scrollLeft >= maxScroll - 4 && e.deltaY > 0;
-        const isAtStart = track.scrollLeft <= 4 && e.deltaY < 0;
-
-        // If not at boundary limits, smoothly glide horizontally and prevent vertical jump
-        if (!isAtEnd && !isAtStart) {
-          e.preventDefault();
-          targetScroll = Math.max(0, Math.min(maxScroll, targetScroll + e.deltaY * 1.6));
-          gsap.to(track, {
-            scrollLeft: targetScroll,
-            duration: 0.38,
-            ease: 'power1.out',
-            overwrite: 'auto'
-          });
-        } else {
-          // Sync reference position at boundary limits
-          targetScroll = track.scrollLeft;
+      ScrollTrigger.create({
+        id: 'products-horizontal-scroll',
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${Math.max(window.innerHeight * 1.5, track.scrollWidth - window.innerWidth + 350)}`,
+        pin: true,
+        anticipatePin: 1,
+        animation: tween,
+        scrub: 1.2, // Silky smooth momentum scrub
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          setScrollProgress(self.progress * 100);
         }
-      }
-    };
+      });
+    }, section);
 
-    track.addEventListener('wheel', handleWheel, { passive: false });
-    return () => track.removeEventListener('wheel', handleWheel);
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      ctx.revert();
+    };
   }, [filteredProducts]);
 
-  // Mouse Drag to Scroll Horizontally with Cursor Grabbing
-  const isTrackDragging = useRef(false);
-  const trackStartX = useRef(0);
-  const trackScrollStart = useRef(0);
-
-  const handleTrackMouseDown = (e) => {
-    if (e.button !== 0 || !productsTrackRef.current) return;
-    isTrackDragging.current = true;
-    trackStartX.current = e.pageX - productsTrackRef.current.offsetLeft;
-    trackScrollStart.current = productsTrackRef.current.scrollLeft;
-    productsTrackRef.current.style.cursor = 'grabbing';
-    productsTrackRef.current.style.userSelect = 'none';
-  };
-
-  const handleTrackMouseMove = (e) => {
-    if (!isTrackDragging.current || !productsTrackRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - productsTrackRef.current.offsetLeft;
-    const walk = (x - trackStartX.current) * 1.3;
-    productsTrackRef.current.scrollLeft = trackScrollStart.current - walk;
-  };
-
-  const handleTrackMouseUp = () => {
-    if (!isTrackDragging.current) return;
-    isTrackDragging.current = false;
-    if (productsTrackRef.current) {
-      productsTrackRef.current.style.cursor = 'grab';
-      productsTrackRef.current.style.removeProperty('user-select');
-    }
-  };
-
-  const handleTrackScroll = () => {
-    if (!productsTrackRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = productsTrackRef.current;
-    const max = scrollWidth - clientWidth;
-    if (max > 0) {
-      setScrollProgress((scrollLeft / max) * 100);
+  // Smooth Navigation Arrow Controls
+  const scrollProducts = (direction) => {
+    const st = ScrollTrigger.getById('products-horizontal-scroll');
+    if (st) {
+      const delta = direction === 'next' ? 0.22 : -0.22;
+      const targetProgress = Math.max(0, Math.min(1, st.progress + delta));
+      const targetScroll = st.start + targetProgress * (st.end - st.start);
+      window.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -979,9 +944,9 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. PRODUCTS CATALOG (Smooth Horizontal Carousel Showcase)
+          3. PRODUCTS CATALOG (GSAP Horizontal Scrolling Showcase)
       ───────────────────────────────────────────────────────────── */}
-      <section id="products" className="section-products">
+      <section id="products" ref={productsSectionRef} className="section-products">
         <div className="container">
           
           <div className="products-top-bar">
@@ -1083,11 +1048,6 @@ export default function HomePage({ onCheckout }) {
               <div 
                 className="products-horizontal-track"
                 ref={productsTrackRef}
-                onScroll={handleTrackScroll}
-                onMouseDown={handleTrackMouseDown}
-                onMouseMove={handleTrackMouseMove}
-                onMouseUp={handleTrackMouseUp}
-                onMouseLeave={handleTrackMouseUp}
               >
                 {filteredProducts.map((product) => (
                   <div key={product._id} className="product-horizontal-item">
