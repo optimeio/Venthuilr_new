@@ -422,6 +422,17 @@ export default function HomePage({ onCheckout }) {
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Unique categories for filtering
+  const categoryTabs = ['All', ...new Set(products.map((p) => p.category).filter(Boolean))];
+
+  // Filter products by category and search
+  const filteredProducts = products.filter((p) => {
+    const matchCategory = activeCategory === 'All' || p.category === activeCategory;
+    const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchCategory && matchSearch;
+  });
   
   // Products Horizontal Track Ref, Section Ref & Progress State
   const productsSectionRef = useRef(null);
@@ -527,17 +538,6 @@ export default function HomePage({ onCheckout }) {
     dragStartX.current = 0;
     dragEndX.current = 0;
   };
-
-  // Unique categories for filtering
-  const categoryTabs = ['All', ...new Set(products.map((p) => p.category).filter(Boolean))];
-
-  // Filter products by category and search
-  const filteredProducts = products.filter((p) => {
-    const matchCategory = activeCategory === 'All' || p.category === activeCategory;
-    const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchCategory && matchSearch;
-  });
 
   // Open Quick View
   const handleOpenQuickView = useCallback((product) => {
