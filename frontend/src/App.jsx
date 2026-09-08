@@ -14,6 +14,11 @@ import CheckoutModal from './components/CheckoutModal';
 import HomePage      from './pages/HomePage';
 import ProductsPage  from './pages/ProductsPage';
 import Footer        from './components/Footer';
+import Lenis         from 'lenis';
+import gsap          from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Endpoint Route Handler for /home, /categories, /story, /reviews, /contact, /cart, /signin
 function EndpointRouteHandler({ setAuthOpen, openCheckout }) {
@@ -56,6 +61,33 @@ function EndpointRouteHandler({ setAuthOpen, openCheckout }) {
 function MainApp() {
   const [authOpen,     setAuthOpen]     = useState(false);
   const [checkoutData, setCheckoutData] = useState(null);  // null = closed
+
+  // Initialize Lenis Smooth Scrolling Engine synchronized with GSAP
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.6,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    const updateLenis = (time) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateLenis);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove(updateLenis);
+      lenis.destroy();
+    };
+  }, []);
 
   const openCheckout = (cartSummary) => {
     setCheckoutData(cartSummary);
