@@ -1054,8 +1054,14 @@
    4. PRODUCTS CATALOG (Search, Category Filters, Grid)
 ───────────────────────────────────────────────────────────── */
 .section-products {
-  padding: 72px 0;
+  padding: 40px 0;
   background-color: #ffffff;
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .products-top-bar {
@@ -1064,7 +1070,7 @@
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .products-section-sub {
@@ -1133,26 +1139,21 @@
 .products-horizontal-wrapper {
   position: relative;
   width: 100%;
+  overflow: visible;
 }
 
 .products-horizontal-track {
   display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 12px 4px 20px;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.products-horizontal-track::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  flex-wrap: nowrap;
+  gap: 22px;
+  padding: 10px 0 16px;
+  will-change: transform;
 }
 
 .product-horizontal-item {
-  flex: 0 0 270px;
-  max-width: 270px;
-  min-width: 270px;
+  flex: 0 0 280px;
+  max-width: 280px;
+  min-width: 280px;
   will-change: transform, opacity;
 }
 

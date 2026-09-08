@@ -423,82 +423,45 @@ export default function HomePage({ onCheckout }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Products Horizontal Track Ref & Progress State
+  // Products Horizontal Track Ref, Section Ref & Progress State
+  const productsSectionRef = useRef(null);
   const productsTrackRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Hero Showcase Category Tab & Slideshow State
-  const [heroTab, setHeroTab] = useState('powders'); // 'powders' | 'oils'
-  const activeHeroSlides = heroTab === 'powders' ? HERO_POWDERS : HERO_OILS;
-
-  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
-  const [isHeroPaused, setIsHeroPaused] = useState(false);
-  const isDragging = useRef(false);
-  const dragStartX = useRef(0);
-  const dragEndX = useRef(0);
-
-  // Quick View Modal State
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [selectedVariant, setSelectedVariant] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
-
-  // Reviews Carousel
-  const [currentReview, setCurrentReview] = useState(0);
-
-  // FAQ Accordion
-  const [openFaq, setOpenFaq] = useState(0);
-
-  // Contact Form State
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
-  const [formStatus, setFormStatus] = useState('idle');
-
-  // GSAP Smooth Horizontal Scroll Navigation
-  const scrollProducts = (direction) => {
-    if (!productsTrackRef.current) return;
-    const cardWidth = 320;
-    const current = productsTrackRef.current.scrollLeft;
-    const target = direction === 'next' ? current + cardWidth * 1.5 : current - cardWidth * 1.5;
-    gsap.to(productsTrackRef.current, {
-      scrollLeft: target,
-      duration: 0.55,
-      ease: 'power2.out',
-      onUpdate: () => handleTrackScroll()
-    });
-  };
-
-  const handleTrackScroll = () => {
-    if (!productsTrackRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = productsTrackRef.current;
-    const max = scrollWidth - clientWidth;
-    if (max > 0) {
-      setScrollProgress((scrollLeft / max) * 100);
-    }
-  };
-
-  // GSAP Entrance Stagger for Products Section
+  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation
   useEffect(() => {
-    const cards = document.querySelectorAll('.product-horizontal-item');
-    if (cards.length > 0) {
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 28, scale: 0.97 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.05,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: '#products',
-            start: 'top 85%',
-            toggleActions: 'play none none none'
-          }
+    const section = productsSectionRef.current;
+    const track = productsTrackRef.current;
+    if (!section || !track) return;
+
+    const ctx = gsap.context(() => {
+      const getScrollDistance = () => {
+        const trackWidth = track.scrollWidth;
+        const containerWidth = section.clientWidth;
+        return -(trackWidth - containerWidth + 60);
+      };
+
+      const tween = gsap.to(track, {
+        x: getScrollDistance,
+        ease: 'none'
+      });
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${Math.max(600, track.scrollWidth - window.innerWidth + 350)}`,
+        pin: true,
+        animation: tween,
+        scrub: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          setScrollProgress(self.progress * 100);
         }
-      );
-    }
-  }, [activeCategory, searchQuery]);
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, [filteredProducts]);
 
   // Load products from API
   useEffect(() => {
@@ -934,7 +897,7 @@ export default function HomePage({ onCheckout }) {
       {/* ─────────────────────────────────────────────────────────────
           3. PRODUCTS CATALOG (GSAP Horizontal Scrolling Showcase)
       ───────────────────────────────────────────────────────────── */}
-      <section id="products" className="section-products">
+      <section id="products" ref={productsSectionRef} className="section-products">
         <div className="container">
           
           <div className="products-top-bar">
