@@ -1148,6 +1148,12 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+  cursor: grab;
+}
+
+.products-horizontal-track img {
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .products-horizontal-track::-webkit-scrollbar {
