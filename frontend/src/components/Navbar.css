@@ -1,20 +1,58 @@
 .announce-bar {
-  background: var(--green-dark);
-  color: var(--gold-light);
+  background: #11291b;
+  color: #e2ede5;
   height: 32px;
-  overflow: hidden;
   display: flex;
   align-items: center;
   font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
   position: relative;
   z-index: 1001;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.announce-track {
+
+.announce-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.announce-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   white-space: nowrap;
-  animation: marquee 35s linear infinite;
-  display: inline-block;
+}
+
+.announce-icon {
+  color: #a8d5b5;
+}
+
+.announce-icon.gold {
+  color: #e6ca65;
+}
+
+.announce-sep {
+  color: #436650;
+  font-size: 10px;
+}
+
+@media (max-width: 840px) {
+  .announce-item.hide-sm {
+    display: none;
+  }
+}
+
+@media (max-width: 580px) {
+  .announce-sep {
+    display: none;
+  }
+  .announce-item:not(:first-child) {
+    display: none;
+  }
 }
 
 .navbar {
@@ -25,19 +63,20 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid #edf3ee;
-  transition: var(--transition);
+  transition: all 0.3s ease;
 }
+
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.99);
-  border-bottom-color: #e4ede6;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border-bottom-color: #e0eae2;
+  box-shadow: 0 4px 20px rgba(18, 43, 28, 0.06);
 }
 
 .navbar-inner {
   display: flex;
   align-items: center;
-  height: 64px;
-  gap: 32px;
+  height: 58px;
+  gap: 28px;
 }
 
 .nav-logo {
@@ -46,16 +85,17 @@
   flex-shrink: 0;
 }
 .logo-img {
-  height: 44px;
+  height: 38px;
   width: auto;
   object-fit: contain;
 }
 .logo-text {
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  font-size: 1.4rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.45rem;
   color: var(--green-dark);
-  letter-spacing: -0.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   align-items: center;
 }
 

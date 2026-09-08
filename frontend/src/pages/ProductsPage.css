@@ -1,0 +1,291 @@
+/* ══════════════════════════════════════════════════════════════
+   PRODUCTS PAGE — LUXURY ORGANIC D2C CATALOG DESIGN
+   ══════════════════════════════════════════════════════════════ */
+
+.products-page-root {
+  background-color: #ffffff;
+  color: #1b2920;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Header */
+.products-hero-header {
+  background: radial-gradient(circle at 50% 30%, #f4faf6 0%, #ffffff 70%, #fdfbf7 100%);
+  padding: 48px 0 36px;
+  border-bottom: 1px solid #eaf2ec;
+  text-align: center;
+}
+
+.products-header-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.products-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f0f7f3 0%, #e8f5ed 100%);
+  border: 1px solid #cce8d8;
+  color: #1a5632;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 5px 16px;
+  border-radius: 50px;
+  margin-bottom: 14px;
+}
+
+.products-badge-pill .gold {
+  color: #c9a84c;
+}
+
+.products-page-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #0d2316;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+}
+
+.products-page-title .title-accent {
+  background: linear-gradient(135deg, #14723e 0%, #1a5734 50%, #b8860b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.products-page-subtitle {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4a6353;
+  margin: 0 auto;
+}
+
+/* Main Catalog Section */
+.products-catalog-section {
+  padding: 36px 0 60px;
+  flex: 1;
+}
+
+/* Toolbar */
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.catalog-search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  max-width: 480px;
+}
+
+.catalog-search-wrapper .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7b9484;
+}
+
+.catalog-search-wrapper input {
+  width: 100%;
+  padding: 10px 40px 10px 40px;
+  border-radius: 50px;
+  border: 1.5px solid #dce7df;
+  font-size: 0.9rem;
+  background: #ffffff;
+  color: #11291b;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.catalog-search-wrapper input:focus {
+  border-color: #143323;
+  box-shadow: 0 0 0 3px rgba(20, 51, 35, 0.08);
+}
+
+.catalog-search-wrapper .search-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #7b9484;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-sort-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #dce7df;
+  border-radius: 50px;
+  padding: 4px 14px;
+}
+
+.catalog-sort-wrapper .sort-icon {
+  color: #7b9484;
+}
+
+.sort-select {
+  border: none;
+  background: transparent;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #143323;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Category Filter Pills */
+.catalog-category-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.category-pill-btn {
+  background: #f4faf6;
+  border: 1px solid #d6e8dc;
+  color: #3b5344;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-pill-btn:hover {
+  background: #e8f5ec;
+  border-color: #badcc5;
+  color: #143323;
+}
+
+.category-pill-btn.active {
+  background: #143323;
+  border-color: #143323;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(20, 51, 35, 0.18);
+}
+
+/* Results Info */
+.catalog-results-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+  color: #617b6c;
+}
+
+.btn-clear-filters {
+  background: none;
+  border: none;
+  color: #15803d;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Products Grid */
+.catalog-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+@media (max-width: 640px) {
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Empty State */
+.catalog-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fdfdfd;
+  border: 1.5px dashed #dbe8e0;
+  border-radius: 20px;
+  color: #557260;
+}
+
+.catalog-empty-state h3 {
+  font-size: 1.25rem;
+  color: #143323;
+  margin: 14px 0 6px;
+}
+
+.btn-reset-catalog {
+  margin-top: 16px;
+  background: #143323;
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Trust Strip */
+.catalog-trust-strip {
+  background: #f7fbf8;
+  border-top: 1px solid #eaf2ec;
+  padding: 30px 0;
+}
+
+.trust-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.trust-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trust-strip-item .trust-icon {
+  color: #15803d;
+  flex-shrink: 0;
+}
+
+.trust-strip-item strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #143323;
+}
+
+.trust-strip-item span {
+  font-size: 0.78rem;
+  color: #557260;
+}
+
+@media (max-width: 768px) {
+  .trust-strip-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

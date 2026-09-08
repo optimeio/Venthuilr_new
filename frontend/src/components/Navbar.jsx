@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ShoppingBag, Menu, X, User, LogOut, ChevronDown, Search } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, LogOut, ChevronDown, Search, Sparkles, Truck, ShieldCheck } from 'lucide-react';
 import './Navbar.css';
 
 const NAV_LINKS = [
-  { label: 'Home',       href: '#home' },
-  { label: 'Products',   href: '#products' },
-  { label: 'Categories', href: '#categories' },
-  { label: 'Our Story',  href: '#story' },
-  { label: 'Reviews',    href: '#reviews' },
-  { label: 'Contact',    href: '#faq' },
+  { label: 'Home',       path: '/home',       href: '#home' },
+  { label: 'Products',   path: '/products',   href: '#products' },
+  { label: 'Categories', path: '/categories', href: '#categories' },
+  { label: 'Our Story',  path: '/story',      href: '#story' },
+  { label: 'Reviews',    path: '/reviews',    href: '#reviews' },
+  { label: 'Contact',    path: '/contact',    href: '#faq' },
 ];
 
 export default function Navbar({ onAuthOpen, onSearchOpen }) {
@@ -20,6 +21,8 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
   const [menuOpen,  setMenuOpen]  = useState(false);
   const [userOpen,  setUserOpen]  = useState(false);
   const dropRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -33,25 +36,46 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
     return () => document.removeEventListener('mousedown', close);
   }, []);
 
-  const scrollTo = (href) => {
+  const handleNavClick = (link) => {
     setMenuOpen(false);
-    const el = document.querySelector(href);
+    navigate(link.path);
+    const el = document.querySelector(link.href);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <>
-      {/* Announcement Bar */}
+      {/* Slim Luxury Announcement Bar */}
       <div className="announce-bar">
-        <div className="announce-track">
-          <span>🌿 Free Shipping on Orders Above ₹499 &nbsp;|&nbsp; 100% Pure &amp; Cold-Pressed &nbsp;|&nbsp; Direct Farm Sourcing &nbsp;|&nbsp; Secure Checkout &nbsp;|&nbsp; 🌿 Free Shipping on Orders Above ₹499 &nbsp;|&nbsp; 100% Pure &amp; Cold-Pressed &nbsp;|&nbsp; Direct Farm Sourcing &nbsp;|&nbsp; Secure Checkout &nbsp;|&nbsp;</span>
+        <div className="announce-inner container">
+          <div className="announce-item">
+            <Sparkles size={13} className="announce-icon gold" />
+            <span>100% Certified Organic • Tamil Nadu Heritage Farms</span>
+          </div>
+          <div className="announce-sep">•</div>
+          <div className="announce-item">
+            <Truck size={13} className="announce-icon" />
+            <span>Free Delivery On Orders Above ₹499</span>
+          </div>
+          <div className="announce-sep">•</div>
+          <div className="announce-item hide-sm">
+            <ShieldCheck size={13} className="announce-icon" />
+            <span>Wood Cold-Pressed &amp; Lab-Tested Purity</span>
+          </div>
         </div>
       </div>
 
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="navbar-inner container">
           {/* Logo */}
-          <a href="#home" className="nav-logo" onClick={(e) => { e.preventDefault(); scrollTo('#home'); }}>
+          <a 
+            href="/home" 
+            className="nav-logo" 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              handleNavClick({ path: '/home', href: '#home' }); 
+            }}
+          >
             <img src="/logo.png" alt="Venthulir" className="logo-img" onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
             <span className="logo-text" style={{display:'none'}}>VENTHULIR</span>
           </a>
@@ -60,7 +84,13 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
           <ul className="nav-links">
             {NAV_LINKS.map(l => (
               <li key={l.label}>
-                <a href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}>{l.label}</a>
+                <a 
+                  href={l.path} 
+                  className={location.pathname === l.path ? 'active' : ''}
+                  onClick={(e) => { e.preventDefault(); handleNavClick(l); }}
+                >
+                  {l.label}
+                </a>
               </li>
             ))}
           </ul>
@@ -112,7 +142,14 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
         {menuOpen && (
           <div className="mobile-menu animate-slide-down">
             {NAV_LINKS.map(l => (
-              <a key={l.label} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}>{l.label}</a>
+              <a 
+                key={l.label} 
+                href={l.path} 
+                className={location.pathname === l.path ? 'active' : ''}
+                onClick={(e) => { e.preventDefault(); handleNavClick(l); }}
+              >
+                {l.label}
+              </a>
             ))}
             {!isAuthenticated && (
               <button className="btn-primary" style={{margin:'8px 20px'}} onClick={() => { setMenuOpen(false); onAuthOpen(); }}>Sign In</button>

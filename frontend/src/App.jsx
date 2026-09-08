@@ -1,20 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 
 import Navbar        from './components/Navbar';
 import CartDrawer    from './components/CartDrawer';
 import AuthModal     from './components/AuthModal';
 import CheckoutModal from './components/CheckoutModal';
 import HomePage      from './pages/HomePage';
+import ProductsPage  from './pages/ProductsPage';
 import Footer        from './components/Footer';
 
-export default function App() {
-  const [authOpen,    setAuthOpen]    = useState(false);
+// Endpoint Route Handler for /home, /categories, /story, /reviews, /contact, /cart, /signin
+function EndpointRouteHandler({ setAuthOpen, openCheckout }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { setIsCartOpen } = useCart();
+
+  useEffect(() => {
+    const path = location.pathname.toLowerCase().replace(/\/$/, '');
+
+    if (path === '' || path === '/home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (path === '/categories') {
+      const el = document.getElementById('categories');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/story' || path === '/about') {
+      const el = document.getElementById('story');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/reviews') {
+      const el = document.getElementById('reviews');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/contact' || path === '/faq') {
+      const el = document.getElementById('faq');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (path === '/cart') {
+      setIsCartOpen(true);
+    } else if (path === '/signin' || path === '/login' || path === '/auth') {
+      setAuthOpen(true);
+    }
+  }, [location.pathname]);
+
+  return (
+    <HomePage
+      onAuthOpen={() => setAuthOpen(true)}
+      onCheckout={openCheckout}
+    />
+  );
+}
+
+function MainApp() {
+  const [authOpen,     setAuthOpen]     = useState(false);
   const [checkoutData, setCheckoutData] = useState(null);  // null = closed
 
   const openCheckout = (cartSummary) => {
@@ -22,33 +62,55 @@ export default function App() {
   };
 
   return (
+    <>
+      <Navbar onAuthOpen={() => setAuthOpen(true)} />
+
+      <CartDrawer onCheckout={openCheckout} />
+
+      <Routes>
+        <Route path="/" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/home" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/products" element={<ProductsPage onAuthOpen={() => setAuthOpen(true)} onCheckout={openCheckout} />} />
+        <Route path="/categories" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/story" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/about" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/reviews" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/contact" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/faq" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/cart" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/signin" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/login" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/auth" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="*" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+      </Routes>
+
+      <Footer />
+
+      {authOpen && (
+        <AuthModal onClose={() => setAuthOpen(false)} />
+      )}
+
+      {checkoutData && (
+        <CheckoutModal
+          cartSummary={checkoutData}
+          onClose={() => setCheckoutData(null)}
+          onAuthOpen={() => { setCheckoutData(null); setAuthOpen(true); }}
+        />
+      )}
+
+      <ToastContainer position="bottom-right" autoClose={3000} theme="light" />
+    </>
+  );
+}
+
+export default function App() {
+  return (
     <HelmetProvider>
       <AuthProvider>
         <CartProvider>
-          <Navbar onAuthOpen={() => setAuthOpen(true)} />
-
-          <CartDrawer onCheckout={openCheckout} />
-
-          <HomePage
-            onAuthOpen={() => setAuthOpen(true)}
-            onCheckout={openCheckout}
-          />
-
-          <Footer />
-
-          {authOpen && (
-            <AuthModal onClose={() => setAuthOpen(false)} />
-          )}
-
-          {checkoutData && (
-            <CheckoutModal
-              cartSummary={checkoutData}
-              onClose={() => setCheckoutData(null)}
-              onAuthOpen={() => { setCheckoutData(null); setAuthOpen(true); }}
-            />
-          )}
-
-          <ToastContainer position="bottom-right" autoClose={3000} theme="light" />
+          <BrowserRouter>
+            <MainApp />
+          </BrowserRouter>
         </CartProvider>
       </AuthProvider>
     </HelmetProvider>

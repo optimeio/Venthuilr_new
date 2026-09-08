@@ -1,13 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
 import './Footer.css';
 
-const scrollTo = (href) => {
-  const el = document.querySelector(href);
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-};
-
 export default function Footer() {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (path, hash) => {
+    navigate(path);
+    const el = document.querySelector(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <footer className="footer">
       {/* Main Footer */}
@@ -31,8 +35,19 @@ export default function Footer() {
           <div className="footer-col">
             <h4>Quick Links</h4>
             <ul>
-              {[['#home','Home'],['#products','Products'],['#categories','Categories'],['#story','Our Story'],['#reviews','Reviews'],['#contact','Contact']].map(([href,label]) => (
-                <li key={label}><a href={href} onClick={(e)=>{e.preventDefault();scrollTo(href);}}>{label}</a></li>
+              {[
+                ['/home', '#home', 'Home'],
+                ['/products', '#products', 'Products'],
+                ['/categories', '#categories', 'Categories'],
+                ['/story', '#story', 'Our Story'],
+                ['/reviews', '#reviews', 'Reviews'],
+                ['/contact', '#faq', 'Contact']
+              ].map(([path, hash, label]) => (
+                <li key={label}>
+                  <a href={path} onClick={(e) => { e.preventDefault(); handleLinkClick(path, hash); }}>
+                    {label}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>

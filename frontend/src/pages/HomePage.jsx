@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   ArrowRight, ShieldCheck, Leaf, Droplets, Award, Star,
   ChevronDown, X, ChevronLeft, ChevronRight, Plus, Minus,
@@ -8,6 +11,19 @@ import {
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import './HomePage.css';
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Direct Hero Product Image Assets
+import imgTurmeric from '../assets/hero/turmeric.png';
+import imgChilli from '../assets/hero/chilli.png';
+import imgCoriander from '../assets/hero/coriander.png';
+import imgGaramMasala from '../assets/hero/garam_masala.png';
+import imgSambar from '../assets/hero/sambar.png';
+import imgOilCoconut from '../assets/hero/oil_coconut.png';
+import imgOilGroundnut from '../assets/hero/oil_groundnut.png';
+import imgOilGingelly from '../assets/hero/oil_gingelly.png';
+import imgOilSunflower from '../assets/hero/oil_sunflower.png';
 
 const API = import.meta.env.VITE_API_URL || '/api';
 
@@ -117,6 +133,272 @@ const FAQS = [
   }
 ];
 
+const HERO_POWDERS = [
+  {
+    id: 'turmeric-powder',
+    title: 'Salem Pure Turmeric Powder',
+    subtitle: 'High Curcumin Content • Fresh Farm Harvest',
+    badge: '100% Pure & Natural',
+    image: imgTurmeric,
+    tag: 'Authentic Ground Turmeric Roots',
+    price: 'From ₹140',
+    rating: '4.9 ★ (420+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fffef4 0%, #fef3d3 50%, #fae29c 100%)',
+    spiceColor: '#b8860b',
+    auraGlow: 'rgba(218, 165, 32, 0.4)',
+  },
+  {
+    id: 'chilli-powder',
+    title: 'Guntur Red Chilli Powder',
+    subtitle: 'Sun-Dried Chillies • Vibrant Natural Red Color',
+    badge: 'Stone-Ground Purity',
+    image: imgChilli,
+    tag: 'Rich Heat & Zero Added Colors',
+    price: 'From ₹150',
+    rating: '4.9 ★ (380+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fff7f5 0%, #fde0da 50%, #f8b8ab 100%)',
+    spiceColor: '#c0392b',
+    auraGlow: 'rgba(192, 57, 43, 0.35)',
+  },
+  {
+    id: 'coriander-powder',
+    title: 'Native Coriander Powder',
+    subtitle: 'Slowly Roasted Tamil Nadu Heirloom Seeds',
+    badge: 'Single-Origin Farm Harvest',
+    image: imgCoriander,
+    tag: 'Essential Daily Kitchen Aroma',
+    price: 'From ₹130',
+    rating: '4.8 ★ (310+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #f5fcf7 0%, #dcf4e5 50%, #bae9cc 100%)',
+    spiceColor: '#27ae60',
+    auraGlow: 'rgba(39, 174, 96, 0.35)',
+  },
+  {
+    id: 'garam-masala',
+    title: 'Heritage Garam Masala',
+    subtitle: '12 Whole Spices Roasted & Hand-Blended',
+    badge: 'Traditional Recipe',
+    image: imgGaramMasala,
+    tag: 'Cardamom, Cinnamon, Cloves & Star Anise',
+    price: 'From ₹180',
+    rating: '5.0 ★ (290+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fef8f4 0%, #faeade 50%, #ebd0bc 100%)',
+    spiceColor: '#8e4a23',
+    auraGlow: 'rgba(142, 74, 35, 0.35)',
+  },
+  {
+    id: 'sambar-powder',
+    title: 'Traditional Sambar Powder',
+    subtitle: 'Authentic South Indian Generational Recipe',
+    badge: 'Generational Recipe',
+    image: imgSambar,
+    tag: 'Rich Aroma & Perfect Homestyle Flavor',
+    price: 'From ₹160',
+    rating: '4.9 ★ (510+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fef8f3 0%, #fce7da 50%, #f8cdb4 100%)',
+    spiceColor: '#d35400',
+    auraGlow: 'rgba(211, 84, 0, 0.35)',
+  }
+];
+
+const HERO_OILS = [
+  {
+    id: 'coconut-oil',
+    title: 'Wood Cold-Pressed Coconut Oil',
+    subtitle: '100% Pure Chekku • Unrefined & Virgin Extracted',
+    badge: 'Wood Cold-Pressed',
+    image: imgOilCoconut,
+    tag: 'Fresh Sun-Dried Copra Extraction',
+    price: 'From ₹280',
+    rating: '4.9 ★ (640+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #f6fcf8 0%, #e3f5ea 50%, #c5ebd6 100%)',
+    spiceColor: '#2e7d32',
+    auraGlow: 'rgba(46, 125, 50, 0.35)',
+  },
+  {
+    id: 'groundnut-oil',
+    title: 'Wood Cold-Pressed Groundnut Oil',
+    subtitle: 'Selected Native Peanuts • Nutty Aroma & Rich Smoke Point',
+    badge: '100% Pure & Natural',
+    image: imgOilGroundnut,
+    tag: 'Slow Chekku Pressed Under 40°C',
+    price: 'From ₹260',
+    rating: '4.9 ★ (820+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fffef4 0%, #fef1cf 50%, #f9de96 100%)',
+    spiceColor: '#c88612',
+    auraGlow: 'rgba(200, 134, 18, 0.4)',
+  },
+  {
+    id: 'gingelly-oil',
+    title: 'Wood Cold-Pressed Gingelly Oil',
+    subtitle: 'First-Grade Black Sesame Seeds & Palm Jaggery Blend',
+    badge: 'Traditional Chekku',
+    image: imgOilGingelly,
+    tag: 'Generations of Authentic Flavour',
+    price: 'From ₹340',
+    rating: '5.0 ★ (570+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fef8f4 0%, #f8e6d7 50%, #e8c6ad 100%)',
+    spiceColor: '#965022',
+    auraGlow: 'rgba(150, 80, 34, 0.35)',
+  },
+  {
+    id: 'sunflower-oil',
+    title: 'Wood Cold-Pressed Sunflower Oil',
+    subtitle: '100% Pure & Natural • Rich in Vitamin E & Healthy Fats',
+    badge: 'Cold-Pressed Purity',
+    image: imgOilSunflower,
+    tag: 'Fresh Seed Cold Extraction',
+    price: 'From ₹240',
+    rating: '4.8 ★ (390+)',
+    bgGradient: 'radial-gradient(ellipse at 50% 30%, #fffef2 0%, #fef7c8 50%, #fae890 100%)',
+    spiceColor: '#d49b00',
+    auraGlow: 'rgba(212, 155, 0, 0.4)',
+  }
+];
+
+const INITIAL_CATALOG_PRODUCTS = [
+  {
+    _id: 'prod-turmeric',
+    name: 'Salem Pure Turmeric Powder',
+    category: 'Spice Powders',
+    badge: '100% Pure',
+    price: 140,
+    imageUrl: imgTurmeric,
+    images: [imgTurmeric],
+    description: 'High curcumin content authentic Salem turmeric roots, sun-dried and stone ground to retain natural color, aroma, and medicinal healing properties.',
+    variants: [
+      { label: '100g', price: 140 },
+      { label: '250g', price: 320 },
+      { label: '500g', price: 590 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-chilli',
+    name: 'Guntur Red Chilli Powder',
+    category: 'Spice Powders',
+    badge: 'Stone Ground',
+    price: 150,
+    imageUrl: imgChilli,
+    images: [imgChilli],
+    description: 'Sun-dried premium red chillies stone-ground at low temperatures. Delivers deep natural red color, balanced piquant heat, and zero artificial dyes.',
+    variants: [
+      { label: '100g', price: 150 },
+      { label: '250g', price: 340 },
+      { label: '500g', price: 620 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-coriander',
+    name: 'Native Coriander Powder',
+    category: 'Spice Powders',
+    badge: 'Single Origin',
+    price: 130,
+    imageUrl: imgCoriander,
+    images: [imgCoriander],
+    description: 'Slow roasted Tamil Nadu heirloom coriander seeds ground to fragrant perfection. An essential heart of daily South Indian curries and gravies.',
+    variants: [
+      { label: '100g', price: 130 },
+      { label: '250g', price: 290 },
+      { label: '500g', price: 540 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-garam-masala',
+    name: 'Heritage Garam Masala',
+    category: 'Masala Blends',
+    badge: 'Traditional Recipe',
+    price: 180,
+    imageUrl: imgGaramMasala,
+    images: [imgGaramMasala],
+    description: 'A master blend of 12 hand-roasted whole spices: green cardamom, royal cinnamon, cloves, star anise, and mace. Unrivaled fragrant depth.',
+    variants: [
+      { label: '100g', price: 180 },
+      { label: '200g', price: 340 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-sambar-powder',
+    name: 'Traditional Sambar Powder',
+    category: 'Masala Blends',
+    badge: 'Bestseller',
+    price: 160,
+    imageUrl: imgSambar,
+    images: [imgSambar],
+    description: 'Handcrafted with an authentic generational recipe of roasted dals, whole red chillies, coriander, fenugreek, and aromatic spices.',
+    variants: [
+      { label: '100g', price: 160 },
+      { label: '250g', price: 360 },
+      { label: '500g', price: 680 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-coconut-oil',
+    name: 'Wood Cold-Pressed Coconut Oil',
+    category: 'Cold-Pressed Oils',
+    badge: 'Chekku Pressed',
+    price: 280,
+    imageUrl: imgOilCoconut,
+    images: [imgOilCoconut],
+    description: 'Extracted from sun-dried sulfur-free copra using traditional Vaagai wood pestles below 40°C. Raw, unrefined, virgin quality.',
+    variants: [
+      { label: '500ml', price: 280 },
+      { label: '1 Litre', price: 520 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-groundnut-oil',
+    name: 'Wood Cold-Pressed Groundnut Oil',
+    category: 'Cold-Pressed Oils',
+    badge: 'Rich Aroma',
+    price: 260,
+    imageUrl: imgOilGroundnut,
+    images: [imgOilGroundnut],
+    description: 'Pressed from selected native peanuts. High smoke point, rich nutty aroma, and heart-healthy monounsaturated fats.',
+    variants: [
+      { label: '500ml', price: 260 },
+      { label: '1 Litre', price: 490 },
+      { label: '5 Litres', price: 2350 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-gingelly-oil',
+    name: 'Wood Cold-Pressed Gingelly (Sesame) Oil',
+    category: 'Cold-Pressed Oils',
+    badge: 'Palm Jaggery Blend',
+    price: 340,
+    imageUrl: imgOilGingelly,
+    images: [imgOilGingelly],
+    description: 'First-grade black sesame seeds slow-pressed with authentic Palm Jaggery (Karupatti). Rich in calcium and live antioxidants.',
+    variants: [
+      { label: '500ml', price: 340 },
+      { label: '1 Litre', price: 650 }
+    ],
+    inStock: true
+  },
+  {
+    _id: 'prod-sunflower-oil',
+    name: 'Wood Cold-Pressed Sunflower Oil',
+    category: 'Cold-Pressed Oils',
+    badge: '100% Unrefined',
+    price: 240,
+    imageUrl: imgOilSunflower,
+    images: [imgOilSunflower],
+    description: 'Cold-extracted from high-grade sunflower seeds. Light golden hue, neutral pleasant flavour, and packed with natural Vitamin E.',
+    variants: [
+      { label: '500ml', price: 240 },
+      { label: '1 Litre', price: 460 }
+    ],
+    inStock: true
+  }
+];
+
 const StarRating = ({ count = 5 }) => (
   <div className="star-rating-row" aria-label={`${count} out of 5 stars`}>
     {[1, 2, 3, 4, 5].map((i) => (
@@ -134,12 +416,27 @@ const StarRating = ({ count = 5 }) => (
 
 export default function HomePage({ onCheckout }) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(INITIAL_CATALOG_PRODUCTS);
+  const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Products Horizontal Track Ref & Progress State
+  const productsTrackRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Hero Showcase Category Tab & Slideshow State
+  const [heroTab, setHeroTab] = useState('powders'); // 'powders' | 'oils'
+  const activeHeroSlides = heroTab === 'powders' ? HERO_POWDERS : HERO_OILS;
+
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isHeroPaused, setIsHeroPaused] = useState(false);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const dragEndX = useRef(0);
+
   // Quick View Modal State
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -156,19 +453,81 @@ export default function HomePage({ onCheckout }) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [formStatus, setFormStatus] = useState('idle');
 
+  // GSAP Smooth Horizontal Scroll Navigation
+  const scrollProducts = (direction) => {
+    if (!productsTrackRef.current) return;
+    const cardWidth = 320;
+    const current = productsTrackRef.current.scrollLeft;
+    const target = direction === 'next' ? current + cardWidth * 1.5 : current - cardWidth * 1.5;
+    gsap.to(productsTrackRef.current, {
+      scrollLeft: target,
+      duration: 0.55,
+      ease: 'power2.out',
+      onUpdate: () => handleTrackScroll()
+    });
+  };
+
+  const handleTrackScroll = () => {
+    if (!productsTrackRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = productsTrackRef.current;
+    const max = scrollWidth - clientWidth;
+    if (max > 0) {
+      setScrollProgress((scrollLeft / max) * 100);
+    }
+  };
+
+  // GSAP Entrance Stagger for Products Section
+  useEffect(() => {
+    const cards = document.querySelectorAll('.product-horizontal-item');
+    if (cards.length > 0) {
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 28, scale: 0.97 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: '#products',
+            start: 'top 85%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+    }
+  }, [activeCategory, searchQuery]);
+
   // Load products from API
   useEffect(() => {
     fetch(`${API}/products`)
       .then((res) => res.json())
       .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
-        setLoading(false);
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        }
       })
       .catch((err) => {
-        console.error('Failed to load products:', err);
-        setLoading(false);
+        console.error('API load failed, using catalog products:', err);
       });
   }, []);
+
+  // Auto-advance hero slides every 4.5 seconds (pauses on hover/drag)
+  useEffect(() => {
+    if (isHeroPaused) return;
+    const interval = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % activeHeroSlides.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isHeroPaused, activeHeroSlides.length]);
+
+  // Reset slide index if category changes
+  const handleCategorySwitch = (tab) => {
+    setHeroTab(tab);
+    setCurrentHeroSlide(0);
+  };
 
   // Auto rotate reviews
   useEffect(() => {
@@ -177,6 +536,34 @@ export default function HomePage({ onCheckout }) {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  // Hero Touch & Drag Handlers for Mobile / Desktop Swipe
+  const handleDragStart = (clientX) => {
+    isDragging.current = true;
+    dragStartX.current = clientX;
+    dragEndX.current = clientX;
+    setIsHeroPaused(true);
+  };
+
+  const handleDragMove = (clientX) => {
+    if (!isDragging.current) return;
+    dragEndX.current = clientX;
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    setIsHeroPaused(false);
+    
+    const distance = dragStartX.current - dragEndX.current;
+    if (distance > 45) {
+      setCurrentHeroSlide((prev) => (prev + 1) % activeHeroSlides.length);
+    } else if (distance < -45) {
+      setCurrentHeroSlide((prev) => (prev - 1 + activeHeroSlides.length) % activeHeroSlides.length);
+    }
+    dragStartX.current = 0;
+    dragEndX.current = 0;
+  };
 
   // Unique categories for filtering
   const categoryTabs = ['All', ...new Set(products.map((p) => p.category).filter(Boolean))];
@@ -241,113 +628,250 @@ export default function HomePage({ onCheckout }) {
     <div className="home-page-root">
       
       {/* ─────────────────────────────────────────────────────────────
-          1. HERO SECTION (Exact Screenshot Layout)
+          1. HERO SECTION (Warm Ivory Luxury Organic D2C Layout)
       ───────────────────────────────────────────────────────────── */}
       <section id="home" className="home-hero">
-        <div className="container">
+        <div className="hero-bg-accent" />
+        <div className="container hero-container">
           <div className="hero-content-grid">
             
-            {/* Left Column: Headlines & CTAs */}
+            {/* Left Column: Brand Story, Headline & CTAs */}
             <div className="hero-text-col">
               <div className="hero-badge-pill">
                 <span className="badge-pulse-dot" />
-                <span>100% Certified Organic • Chekku Pressed</span>
+                <Sparkles size={13} className="badge-sparkle-icon" />
+                <span>100% TRADITIONAL • WOOD COLD-PRESSED</span>
               </div>
 
               <h1 className="hero-main-heading">
-                Pure Organic Essentials, <br />
-                <span className="heading-accent">Direct From Heritage</span> <br />
-                Tamil Nadu Farms.
+                <span className="heading-line-1">Pure Goodness.</span>
+                <span className="heading-accent">From Tamil Nadu Farms.</span>
               </h1>
 
               <p className="hero-description">
-                Experience the authentic taste of cold-pressed oils, single-origin spices, 
-                and traditional grains. Meticulously crafted with zero chemical preservatives, 
-                zero fillers, and generations of honest farming.
+                Experience wood-pressed virgin oils &amp; single-origin spices — stone ground at low RPMs to retain live antioxidants, rich natural aroma &amp; ancestral taste.
               </p>
 
+              {/* Action Buttons */}
               <div className="hero-actions-row">
                 <button 
                   className="btn-hero-primary" 
                   onClick={() => scrollToSection('products')}
                 >
-                  <span>Explore Catalog</span>
-                  <ArrowRight size={18} />
+                  <Leaf size={16} className="btn-leaf-icon" />
+                  <span>Shop Pure Harvest</span>
+                  <ArrowRight size={17} className="btn-arrow-icon" />
                 </button>
                 <button 
                   className="btn-hero-secondary" 
                   onClick={() => scrollToSection('story')}
                 >
-                  Our Heritage
+                  <span>Our Heritage</span>
+                  <Sparkles size={14} className="btn-sparkle-subtle" />
                 </button>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="hero-trust-row">
-                <div className="trust-pill">
-                  <ShieldCheck size={16} className="pill-icon" />
-                  <span>FSSAI Certified</span>
+              {/* 3 Luxury Micro-Trust Cards */}
+              <div className="hero-trust-cards-row">
+                <div className="trust-card-mini">
+                  <div className="trust-card-icon bg-green">
+                    <Leaf size={16} color="#15803d" />
+                  </div>
+                  <div className="trust-card-info">
+                    <strong>Single-Origin</strong>
+                    <span>Direct Tamil Farms</span>
+                  </div>
                 </div>
-                <div className="trust-pill">
-                  <Droplets size={16} className="pill-icon" />
-                  <span>Wood Cold-Pressed</span>
+                <div className="trust-card-mini">
+                  <div className="trust-card-icon bg-amber">
+                    <Droplets size={16} color="#b45309" />
+                  </div>
+                  <div className="trust-card-info">
+                    <strong>Wooden Chekku</strong>
+                    <span>Cold-Pressed &lt; 40°C</span>
+                  </div>
                 </div>
-                <div className="trust-pill">
-                  <Leaf size={16} className="pill-icon" />
-                  <span>Zero Preservatives</span>
+                <div className="trust-card-mini">
+                  <div className="trust-card-icon bg-emerald">
+                    <ShieldCheck size={16} color="#047857" />
+                  </div>
+                  <div className="trust-card-info">
+                    <strong>Zero Chemicals</strong>
+                    <span>100% Lab Tested</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Social Proof Stats */}
-              <div className="hero-metric-strip">
-                <div className="metric-item">
-                  <div className="metric-val">5,000+</div>
-                  <div className="metric-label">Happy Families</div>
+              {/* Enhanced Social Proof Avatar Cluster */}
+              <div className="hero-social-proof-bar">
+                <div className="avatar-stack">
+                  <span className="avatar-chip av-1">🌿</span>
+                  <span className="avatar-chip av-2">🥥</span>
+                  <span className="avatar-chip av-3">✨</span>
+                  <span className="avatar-chip av-4">🌾</span>
                 </div>
-                <div className="metric-divider" />
-                <div className="metric-item">
-                  <div className="metric-val">4.9 ★</div>
-                  <div className="metric-label">Customer Rating</div>
-                </div>
-                <div className="metric-divider" />
-                <div className="metric-item">
-                  <div className="metric-val">50+</div>
-                  <div className="metric-label">Organic Farms</div>
+                <div className="social-proof-text">
+                  <div className="proof-rating-line">
+                    <span className="star-icons">★★★★★</span>
+                    <strong>4.9 / 5.0 Rating</strong>
+                  </div>
+                  <span className="proof-sub">Loved by <strong>5,000+ Happy Families</strong> across India</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Hero Visual Feature */}
+            {/* Right Column: Artisan Organic Stage Showcase with Powders / Oils Switcher */}
             <div className="hero-visual-col">
-              <div className="hero-media-wrapper">
-                
-                {/* Main Hero Image Showcase */}
-                <div className="hero-image-frame">
-                  <img
-                    src="/hero-products.jpg"
-                    alt="Venthulir Organic Cold-Pressed Oils and Spices"
-                    className="hero-main-photo"
-                  />
-                  <div className="image-tag-floating">
-                    <Sparkles size={14} />
-                    <span>Harvest Fresh Batch</span>
-                  </div>
+              <div 
+                className="artisan-showcase-wrapper"
+                onMouseEnter={() => setIsHeroPaused(true)}
+                onMouseLeave={() => {
+                  setIsHeroPaused(false);
+                  handleDragEnd();
+                }}
+                onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+                onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+                onTouchEnd={handleDragEnd}
+                onMouseDown={(e) => handleDragStart(e.clientX)}
+                onMouseMove={(e) => handleDragMove(e.clientX)}
+                onMouseUp={handleDragEnd}
+              >
+                {/* Category Switcher Tabs (Powders vs Oils) */}
+                <div className="artisan-category-switcher">
+                  <button 
+                    className={`artisan-switch-btn ${heroTab === 'powders' ? 'active' : ''}`}
+                    onClick={() => handleCategorySwitch('powders')}
+                  >
+                    <Sparkles size={14} className="switch-icon" />
+                    <span>Spice Powders</span>
+                    <span className="switcher-count-badge">5</span>
+                  </button>
+                  <button 
+                    className={`artisan-switch-btn ${heroTab === 'oils' ? 'active' : ''}`}
+                    onClick={() => handleCategorySwitch('oils')}
+                  >
+                    <Droplets size={14} className="switch-icon" />
+                    <span>Cold-Pressed Oils</span>
+                    <span className="switcher-count-badge">4</span>
+                  </button>
                 </div>
 
-                {/* Floating Product Highlight Card */}
-                <div className="hero-floating-card top-right">
-                  <div className="card-icon-wrap">🌿</div>
-                  <div className="card-info">
-                    <div className="card-headline">100% Pure</div>
-                    <div className="card-sub">Wood Cold-Pressed</div>
-                  </div>
-                </div>
+                {/* Dynamic Aura Glow matched to active product */}
+                <div 
+                  className="artisan-aura-glow"
+                  style={{ background: activeHeroSlides[currentHeroSlide]?.auraGlow || 'rgba(36, 88, 55, 0.25)' }}
+                />
 
-                <div className="hero-floating-card bottom-left">
-                  <div className="card-icon-wrap">🚚</div>
-                  <div className="card-info">
-                    <div className="card-headline">Free Delivery</div>
-                    <div className="card-sub">On orders above ₹499</div>
+                {/* Main Artisan Sculpted Arch Stage */}
+                <div className="artisan-arch-stage">
+                  
+                  {/* Navigation Arrows */}
+                  <button 
+                    className="artisan-nav-arrow left"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentHeroSlide((prev) => (prev - 1 + activeHeroSlides.length) % activeHeroSlides.length);
+                    }}
+                    aria-label="Previous product"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  <button 
+                    className="artisan-nav-arrow right"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentHeroSlide((prev) => (prev + 1) % activeHeroSlides.length);
+                    }}
+                    aria-label="Next product"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+
+                  {/* Slides Track */}
+                  <div 
+                    className="artisan-slides-track" 
+                    style={{ transform: `translateX(-${currentHeroSlide * 100}%)` }}
+                  >
+                    {activeHeroSlides.map((slide) => (
+                      <div 
+                        key={slide.id} 
+                        className="artisan-slide-scene"
+                        style={{ background: slide.bgGradient }}
+                      >
+                        {/* Concentric Halo Aura Ring */}
+                        <div className="artisan-halo-ring" />
+                        <div className="artisan-halo-ring inner" />
+                        
+                        {/* Upfront, Close-Up Hero Product Container */}
+                        <div className="artisan-hero-focus">
+                          <div className="artisan-wood-plinth" />
+                          <img
+                            src={slide.image}
+                            alt={slide.title}
+                            className="artisan-pouch-closeup"
+                            draggable="false"
+                            loading="eager"
+                          />
+                        </div>
+
+                        {/* Floating Glassmorphic Product Info Capsule */}
+                        <div className="artisan-glass-card">
+                          <div className="artisan-card-header">
+                            <span 
+                              className="artisan-spice-pill"
+                              style={{ 
+                                borderColor: slide.spiceColor,
+                                color: slide.spiceColor 
+                              }}
+                            >
+                              <span className="pill-dot" style={{ background: slide.spiceColor }} />
+                              {slide.badge}
+                            </span>
+                            <div className="artisan-card-meta">
+                              <span className="artisan-rating-pill">
+                                <Star size={11} fill="#eab308" color="#eab308" />
+                                <span>{slide.rating.split(' ')[0]}</span>
+                              </span>
+                              <span className="artisan-price-tag">{slide.price}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="artisan-card-body-row">
+                            <div className="artisan-card-info-text">
+                              <div className="artisan-spice-title">{slide.title}</div>
+                              <div className="artisan-spice-sub">{slide.subtitle}</div>
+                            </div>
+                            <button 
+                              className="artisan-quick-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                scrollToSection('products');
+                              }}
+                              title="Shop Now"
+                            >
+                              <ArrowRight size={15} />
+                            </button>
+                          </div>
+
+                          {/* Minimal slide pagination indicator dots inside card */}
+                          <div className="artisan-dots-minimal">
+                            {activeHeroSlides.map((s, dotIdx) => (
+                              <button
+                                key={s.id}
+                                className={`artisan-mini-dot ${dotIdx === currentHeroSlide ? 'active' : ''}`}
+                                style={dotIdx === currentHeroSlide ? { background: slide.spiceColor } : undefined}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCurrentHeroSlide(dotIdx);
+                                }}
+                                aria-label={`Slide ${dotIdx + 1}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -408,7 +932,155 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. CATEGORIES SECTION (Refined White Luxury Cards)
+          3. PRODUCTS CATALOG (GSAP Horizontal Scrolling Showcase)
+      ───────────────────────────────────────────────────────────── */}
+      <section id="products" className="section-products">
+        <div className="container">
+          
+          <div className="products-top-bar">
+            <div>
+              <span className="section-eyebrow">Our Farm Catalog</span>
+              <h2 className="section-headline">Pure Organic Staples</h2>
+              <p className="products-section-sub">
+                Hand-pressed virgin oils &amp; stone-ground spices • Swipe or scroll horizontally
+              </p>
+            </div>
+
+            <div className="products-top-actions">
+              {/* Search Input */}
+              <div className="product-search-box">
+                <Search size={18} className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search oils, spices..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button
+                    className="search-clear-btn"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                  >
+                    <X size={15} />
+                  </button>
+                )}
+              </div>
+
+              {/* GSAP Horizontal Nav Arrows */}
+              <div className="products-nav-arrows">
+                <button
+                  className="btn-product-arrow left"
+                  onClick={() => scrollProducts('prev')}
+                  aria-label="Previous products"
+                >
+                  <ChevronLeft size={19} />
+                </button>
+                <button
+                  className="btn-product-arrow right"
+                  onClick={() => scrollProducts('next')}
+                  aria-label="Next products"
+                >
+                  <ChevronRight size={19} />
+                </button>
+              </div>
+
+              {/* View All Products Button */}
+              <button
+                className="btn-view-all-header"
+                onClick={() => navigate('/products')}
+              >
+                <span>View All ({products.length})</span>
+                <ArrowRight size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="category-filter-pills">
+            {categoryTabs.map((tab) => (
+              <button
+                key={tab}
+                className={`filter-pill-btn ${activeCategory === tab ? 'active' : ''}`}
+                onClick={() => setActiveCategory(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* GSAP Horizontal Scrollable Container */}
+          {loading ? (
+            <div className="products-horizontal-track">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="product-skeleton-card product-horizontal-item" />
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="products-empty-state">
+              <Package size={52} strokeWidth={1.2} />
+              <h3>No products found</h3>
+              <p>Try searching for another keyword or selecting "All" categories.</p>
+              <button
+                className="btn-secondary-sm"
+                onClick={() => {
+                  setActiveCategory('All');
+                  setSearchQuery('');
+                }}
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="products-horizontal-wrapper">
+              <div 
+                className="products-horizontal-track"
+                ref={productsTrackRef}
+                onScroll={handleTrackScroll}
+              >
+                {filteredProducts.map((product) => (
+                  <div key={product._id} className="product-horizontal-item">
+                    <ProductCard
+                      product={product}
+                      onQuickView={handleOpenQuickView}
+                    />
+                  </div>
+                ))}
+
+                {/* Final Interactive "Explore All" Card */}
+                <div className="product-horizontal-item product-view-all-card-wrapper">
+                  <div 
+                    className="product-view-all-card"
+                    onClick={() => navigate('/products')}
+                  >
+                    <div className="view-all-icon-circle">
+                      <Sparkles size={24} color="#c9a84c" />
+                    </div>
+                    <h3>Explore All Products</h3>
+                    <p>Discover our full catalog of single-origin spices, native oils &amp; grains</p>
+                    <span className="btn-view-all-card-link">
+                      <span>View All ({products.length})</span>
+                      <ArrowRight size={16} />
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visual Progress Bar */}
+              <div className="products-scroll-progress-container">
+                <div 
+                  className="products-scroll-progress-fill" 
+                  style={{ width: `${Math.max(12, scrollProgress)}%` }} 
+                />
+              </div>
+            </div>
+          )}
+
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          4. CATEGORIES SECTION (Refined White Luxury Cards)
       ───────────────────────────────────────────────────────────── */}
       <section id="categories" className="section-categories">
         <div className="container">
@@ -460,90 +1132,142 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. PRODUCTS CATALOG (Search, Category Filters, Grid)
+          5. WHY CHOOSE VENTHULIR (Numbered Value Cards)
       ───────────────────────────────────────────────────────────── */}
-      <section id="products" className="section-products">
+      <section className="section-why-choose">
         <div className="container">
-          
-          <div className="products-top-bar">
-            <div>
-              <span className="section-eyebrow">Our Farm Catalog</span>
-              <h2 className="section-headline">Pure Organic Staples</h2>
-            </div>
-
-            {/* Search Input */}
-            <div className="product-search-box">
-              <Search size={18} className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search oils, spices, grains..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button
-                  className="search-clear-btn"
-                  onClick={() => setSearchQuery('')}
-                  aria-label="Clear search"
-                >
-                  <X size={15} />
-                </button>
-              )}
-            </div>
+          <div className="section-header text-center">
+            <span className="section-eyebrow">Our Core Principles</span>
+            <h2 className="section-headline">Why Choose Venthulir?</h2>
+            <p className="section-subtitle">
+              Every drop of oil, grain of rice, and pinch of spice reflects our commitment to 
+              uncompromised purity and ethical farming.
+            </p>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="category-filter-pills">
-            {categoryTabs.map((tab) => (
-              <button
-                key={tab}
-                className={`filter-pill-btn ${activeCategory === tab ? 'active' : ''}`}
-                onClick={() => setActiveCategory(tab)}
-              >
-                {tab}
-              </button>
-            ))}
+          <div className="why-choose-grid">
+            <div className="why-card">
+              <div className="why-card-top">
+                <span className="why-number">01</span>
+                <div className="why-icon-bubble">
+                  <Leaf size={22} />
+                </div>
+              </div>
+              <h3 className="why-title">Direct Farm Sourcing</h3>
+              <p className="why-desc">
+                We work directly with 50+ certified organic farmers across Tamil Nadu, 
+                eliminating middlemen and ensuring fair livelihoods.
+              </p>
+            </div>
+
+            <div className="why-card">
+              <div className="why-card-top">
+                <span className="why-number">02</span>
+                <div className="why-icon-bubble">
+                  <Droplets size={22} />
+                </div>
+              </div>
+              <h3 className="why-title">Traditional Chekku Press</h3>
+              <p className="why-desc">
+                Extracted using native Vaagai wood mortars under 40°C. 
+                Natural enzymes, vitamins, and authentic aroma remain untouched.
+              </p>
+            </div>
+
+            <div className="why-card">
+              <div className="why-card-top">
+                <span className="why-number">03</span>
+                <div className="why-icon-bubble">
+                  <ShieldCheck size={22} />
+                </div>
+              </div>
+              <h3 className="why-title">Zero Chemicals &amp; Additives</h3>
+              <p className="why-desc">
+                No chemical refining, bleaching, artificial fragrances, or paraffin. 
+                100% single-origin natural goodness in every batch.
+              </p>
+            </div>
+
+            <div className="why-card">
+              <div className="why-card-top">
+                <span className="why-number">04</span>
+                <div className="why-icon-bubble">
+                  <Package size={22} />
+                </div>
+              </div>
+              <h3 className="why-title">Fresh Small-Batch Packing</h3>
+              <p className="why-desc">
+                Bottled and packed fresh to order in food-grade, leak-proof containers 
+                to preserve peak nutritional potency.
+              </p>
+            </div>
           </div>
-
-          {/* Product Grid */}
-          {loading ? (
-            <div className="products-grid-layout">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="product-skeleton-card" />
-              ))}
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="products-empty-state">
-              <Package size={52} strokeWidth={1.2} />
-              <h3>No products found</h3>
-              <p>Try searching for another keyword or selecting "All" categories.</p>
-              <button
-                className="btn-secondary-sm"
-                onClick={() => {
-                  setActiveCategory('All');
-                  setSearchQuery('');
-                }}
-              >
-                Reset Filters
-              </button>
-            </div>
-          ) : (
-            <div className="products-grid-layout">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product._id}
-                  product={product}
-                  onQuickView={handleOpenQuickView}
-                />
-              ))}
-            </div>
-          )}
-
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          5. BRAND STORY & HERITAGE (Editorial 2-Column on White)
+          6. FROM FARM TO HOME (4-Step Process)
+      ───────────────────────────────────────────────────────────── */}
+      <section className="section-process">
+        <div className="container">
+          <div className="section-header text-center">
+            <span className="section-eyebrow">The Journey of Purity</span>
+            <h2 className="section-headline">From Farm to Your Kitchen</h2>
+            <p className="section-subtitle">
+              A transparent, traditional journey from South Indian soil to your family dining table.
+            </p>
+          </div>
+
+          <div className="process-timeline-grid">
+            <div className="process-step-card">
+              <div className="step-badge">Step 01</div>
+              <div className="step-icon-wrap">
+                <Sun size={24} />
+              </div>
+              <h4 className="step-title">Heirloom Cultivation</h4>
+              <p className="step-desc">
+                Non-GMO heirloom seeds nurtured organically in sun-drenched fertile soil.
+              </p>
+            </div>
+
+            <div className="process-step-card">
+              <div className="step-badge">Step 02</div>
+              <div className="step-icon-wrap">
+                <Droplets size={24} />
+              </div>
+              <h4 className="step-title">Slow Wood Pressing</h4>
+              <p className="step-desc">
+                Chekku wooden pestles crush oilseeds at low speeds without frictional heat.
+              </p>
+            </div>
+
+            <div className="process-step-card">
+              <div className="step-badge">Step 03</div>
+              <div className="step-icon-wrap">
+                <Award size={24} />
+              </div>
+              <h4 className="step-title">Lab-Tested Purity</h4>
+              <p className="step-desc">
+                Every batch is certified for zero chemical residues and authentic nutritional value.
+              </p>
+            </div>
+
+            <div className="process-step-card">
+              <div className="step-badge">Step 04</div>
+              <div className="step-icon-wrap">
+                <Truck size={24} />
+              </div>
+              <h4 className="step-title">Doorstep Dispatch</h4>
+              <p className="step-desc">
+                Carefully cushioned and swiftly delivered anywhere across India within 3–5 days.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          7. BRAND STORY & HERITAGE (Editorial 2-Column on Warm Ivory)
       ───────────────────────────────────────────────────────────── */}
       <section id="story" className="section-story">
         <div className="container">
@@ -642,7 +1366,7 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          6. CUSTOMER REVIEWS & TESTIMONIALS (White Carousel)
+          8. CUSTOMER REVIEWS & TESTIMONIALS (Carousel)
       ───────────────────────────────────────────────────────────── */}
       <section id="reviews" className="section-reviews">
         <div className="container">
@@ -718,7 +1442,7 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          7. FAQ & DIRECT INQUIRY (Clean White 2-Column)
+          9. FAQ & DIRECT INQUIRY
       ───────────────────────────────────────────────────────────── */}
       <section id="faq" className="section-faq-contact">
         <div className="container">
@@ -853,6 +1577,43 @@ export default function HomePage({ onCheckout }) {
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          10. FINAL CTA BANNER (Rich Forest Green with Gold Accent)
+      ───────────────────────────────────────────────────────────── */}
+      <section className="section-final-cta">
+        <div className="container">
+          <div className="final-cta-card">
+            <div className="final-cta-content">
+              <span className="final-cta-eyebrow">Pure • Traditional • Honest</span>
+              <h2 className="final-cta-heading">
+                Bring the Goodness of Tamil Nadu Farms Home.
+              </h2>
+              <p className="final-cta-sub">
+                Pure ingredients. Honest farming. Traditional goodness for your entire family. 
+                Experience the difference today with free delivery on orders above ₹499.
+              </p>
+              <div className="final-cta-actions">
+                <button
+                  className="btn-final-primary"
+                  onClick={() => scrollToSection('products')}
+                >
+                  <span>Explore Our Products</span>
+                  <ArrowRight size={18} />
+                </button>
+                <a
+                  href="https://wa.me/918778476414"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-final-secondary"
+                >
+                  <span>Order on WhatsApp</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>

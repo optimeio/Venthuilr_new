@@ -3,25 +3,25 @@
    Premium Organic E-Commerce
    ========================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   /* Brand Colors */
-  --green-dark:    #1a3a2a;
-  --green-mid:     #2d5a3d;
-  --green-light:   #4a8c5c;
-  --green-pale:    #e8f4ec;
+  --green-dark:    #122b1d;
+  --green-mid:     #1d5435;
+  --green-light:   #2e7d32;
+  --green-pale:    #eef7f2;
   --gold:          #c9a84c;
   --gold-light:    #e8c97a;
   --cream:         #ffffff;
   --white:         #ffffff;
-  --text-dark:     #1a2e1f;
-  --text-mid:      #4a5e4f;
-  --text-muted:    #7a9080;
+  --text-dark:     #112419;
+  --text-mid:      #3f5848;
+  --text-muted:    #6e8576;
   --border:        #e4ede6;
-  --shadow-sm:     0 2px 8px rgba(26,58,42,0.06);
-  --shadow-md:     0 8px 32px rgba(26,58,42,0.08);
-  --shadow-lg:     0 20px 60px rgba(26,58,42,0.1);
+  --shadow-sm:     0 2px 8px rgba(18,43,29,0.05);
+  --shadow-md:     0 8px 32px rgba(18,43,29,0.07);
+  --shadow-lg:     0 20px 60px rgba(18,43,29,0.09);
   --radius-sm:     8px;
   --radius-md:     16px;
   --radius-lg:     24px;
@@ -39,7 +39,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #ffffff;
   color: var(--text-dark);
   overflow-x: hidden;
@@ -47,9 +47,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
-  font-family: 'Playfair Display', serif;
-  line-height: 1.2;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
 }
 
 a { text-decoration: none; color: inherit; }

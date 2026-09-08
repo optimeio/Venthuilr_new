@@ -7,3 +7,4 @@ frontend/dist/
 dist/
 .DS_Store
 *.log
+*backup*/
