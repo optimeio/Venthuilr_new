@@ -423,6 +423,15 @@ export default function HomePage({ onCheckout }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Hero Showcase Category Tab & Slideshow State
+  const [heroTab, setHeroTab] = useState('powders'); // 'powders' | 'oils'
+  const activeHeroSlides = heroTab === 'powders' ? HERO_POWDERS : HERO_OILS;
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isHeroPaused, setIsHeroPaused] = useState(false);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const dragEndX = useRef(0);
+
   // Unique categories for filtering
   const categoryTabs = ['All', ...new Set(products.map((p) => p.category).filter(Boolean))];
 
@@ -433,13 +442,29 @@ export default function HomePage({ onCheckout }) {
       (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchCategory && matchSearch;
   });
+
+  // Quick View Modal State
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
+
+  // Reviews Carousel
+  const [currentReview, setCurrentReview] = useState(0);
+
+  // FAQ Accordion
+  const [openFaq, setOpenFaq] = useState(0);
+
+  // Contact Form State
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [formStatus, setFormStatus] = useState('idle');
   
   // Products Horizontal Track Ref, Section Ref & Progress State
   const productsSectionRef = useRef(null);
   const productsTrackRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation
+  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth)
   useEffect(() => {
     const section = productsSectionRef.current;
     const track = productsTrackRef.current;
@@ -448,22 +473,24 @@ export default function HomePage({ onCheckout }) {
     const ctx = gsap.context(() => {
       const getScrollDistance = () => {
         const trackWidth = track.scrollWidth;
-        const containerWidth = section.clientWidth;
-        return -(trackWidth - containerWidth + 60);
+        const containerWidth = track.parentElement ? track.parentElement.clientWidth : section.clientWidth;
+        return -(trackWidth - containerWidth + 30);
       };
 
       const tween = gsap.to(track, {
         x: getScrollDistance,
-        ease: 'none'
+        ease: 'none',
+        force3D: true
       });
 
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: () => `+=${Math.max(600, track.scrollWidth - window.innerWidth + 350)}`,
+        end: () => `+=${Math.max(window.innerHeight * 1.3, track.scrollWidth - window.innerWidth + 200)}`,
         pin: true,
+        anticipatePin: 1,
         animation: tween,
-        scrub: 1,
+        scrub: 0.6,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           setScrollProgress(self.progress * 100);
@@ -473,6 +500,28 @@ export default function HomePage({ onCheckout }) {
 
     return () => ctx.revert();
   }, [filteredProducts]);
+
+  // GSAP Smooth Horizontal Scroll Navigation
+  const scrollProducts = (direction) => {
+    if (!productsTrackRef.current) return;
+    const cardWidth = 300;
+    const current = productsTrackRef.current.scrollLeft;
+    const target = direction === 'next' ? current + cardWidth * 1.5 : current - cardWidth * 1.5;
+    gsap.to(productsTrackRef.current, {
+      scrollLeft: target,
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+  };
+
+  const handleTrackScroll = () => {
+    if (!productsTrackRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = productsTrackRef.current;
+    const max = scrollWidth - clientWidth;
+    if (max > 0) {
+      setScrollProgress((scrollLeft / max) * 100);
+    }
+  };
 
   // Load products from API
   useEffect(() => {

@@ -1145,16 +1145,21 @@
 .products-horizontal-track {
   display: flex;
   flex-wrap: nowrap;
-  gap: 22px;
-  padding: 10px 0 16px;
+  gap: 24px;
+  padding: 12px 0 18px;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transition: none !important;
 }
 
 .product-horizontal-item {
   flex: 0 0 280px;
   max-width: 280px;
   min-width: 280px;
-  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 /* Final Interactive "Explore All" Card */
