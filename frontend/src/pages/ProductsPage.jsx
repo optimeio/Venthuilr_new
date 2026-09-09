@@ -12,7 +12,7 @@ import './ProductsPage.css';
 const API = import.meta.env.VITE_API_URL || '/api';
 
 export default function ProductsPage({ onAuthOpen, onCheckout }) {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
 
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [loading, setLoading] = useState(false);
@@ -350,18 +350,48 @@ export default function ProductsPage({ onAuthOpen, onCheckout }) {
                     </button>
                   </div>
 
-                  <button
-                    className="qv-add-cart-btn"
-                    onClick={() => {
-                      for (let i = 0; i < quantity; i++) {
-                        addToCart(quickViewProduct, selectedVariant);
-                      }
-                      handleCloseQuickView();
-                    }}
-                  >
-                    <ShoppingCart size={17} />
-                    <span>Add to Cart • ₹{qvPrice * quantity}</span>
-                  </button>
+                  <div className="qv-action-buttons-grid">
+                    <button
+                      className="qv-add-cart-btn"
+                      onClick={() => {
+                        for (let i = 0; i < quantity; i++) {
+                          addToCart(quickViewProduct, selectedVariant);
+                        }
+                        handleCloseQuickView();
+                      }}
+                      type="button"
+                    >
+                      <ShoppingCart size={16} />
+                      <span>Add to Cart</span>
+                    </button>
+
+                    <button
+                      className="qv-buy-now-btn"
+                      onClick={() => {
+                        for (let i = 0; i < quantity; i++) {
+                          addToCart(quickViewProduct, selectedVariant);
+                        }
+                        handleCloseQuickView();
+                        setIsCartOpen(false);
+                        const price = qvPrice * quantity;
+                        const shippingFee = price >= 499 ? 0 : 49;
+                        if (onCheckout) {
+                          onCheckout({
+                            grandTotal: price + shippingFee,
+                            discount: 0,
+                            appliedCoupon: null,
+                            shippingFee
+                          });
+                        } else {
+                          const checkoutBtn = document.querySelector('.checkout-cta') || document.querySelector('.btn-checkout');
+                          if (checkoutBtn) checkoutBtn.click();
+                        }
+                      }}
+                      type="button"
+                    >
+                      <span>Buy Now • ₹{qvPrice * quantity}</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Micro guarantees */}

@@ -29,46 +29,97 @@ const API = import.meta.env.VITE_API_URL || '/api';
 
 const CATEGORIES = [
   { 
+    id: 'oils',
     name: 'Cold-Pressed Oils',  
+    tamilName: 'மரச்செக்கு எண்ணெய்கள்',
     iconType: 'droplets',
-    badge: 'Traditional Chekku',
-    desc: 'Sesame, Groundnut, Coconut & Mustard',
-    items: '4 Products Available'
+    badge: 'Traditional Chekku < 40°C',
+    desc: 'Extracted in native Vaagai wood mortars without heat or artificial solvents. Retains live natural antioxidants & rich ancestral aroma.',
+    items: '4 Virgin Oils Available',
+    filterParam: 'Cold-Pressed Oils',
+    image: imgOilGingelly,
+    secondaryImg: imgOilCoconut,
+    origin: 'Native Tamil Nadu Chekku',
+    highlights: ['Gingelly (Sesame)', 'Groundnut', 'Pure Coconut', 'Sunflower'],
+    isFeatured: true,
+    accentGlow: 'rgba(217, 119, 6, 0.15)'
   },
   { 
-    name: 'Spice Powders',      
+    id: 'spices',
+    name: 'Single-Origin Spices',      
+    tamilName: 'கைமுறை மசாலா பொடிகள்',
     iconType: 'sparkles',
-    badge: 'Single Origin',
-    desc: 'Turmeric, Chilli, Coriander & Pepper',
-    items: '6 Products Available'
+    badge: 'Sun-Dried & Stone-Ground',
+    desc: 'High curcumin Salem turmeric, vivid Guntur red chillies, and fragrant Erode coriander stone-ground at low RPMs.',
+    items: '6 Pure Powders Available',
+    filterParam: 'Spice Powders',
+    image: imgTurmeric,
+    secondaryImg: imgChilli,
+    origin: 'Salem & Guntur Direct Farms',
+    highlights: ['Salem Turmeric', 'Guntur Red Chilli', 'Erode Coriander', 'Black Pepper'],
+    isFeatured: true,
+    accentGlow: 'rgba(220, 38, 38, 0.15)'
   },
   { 
-    name: 'Masala Blends',      
+    id: 'masalas',
+    name: 'Heritage Masala Blends',      
+    tamilName: 'பாரம்பரிய கூட்டு மசாலா',
     iconType: 'flame',
-    badge: 'Heritage Recipes',
-    desc: 'Sambar, Rasam, Garam & Curry Blends',
-    items: '5 Products Available'
+    badge: '12 Hand-Roasted Spices',
+    desc: 'Slow-roasted in small batches following ancestral family recipes. Fragrant heart for wholesome rasam, sambar & curries.',
+    items: '5 Authentic Blends Available',
+    filterParam: 'Masala Blends',
+    image: imgSambar,
+    secondaryImg: imgGaramMasala,
+    origin: 'Chettinad & Kongu Heritage',
+    highlights: ['Traditional Sambar', 'Royal Garam Masala', 'Kongu Rasam Powder'],
+    isFeatured: false,
+    accentGlow: 'rgba(180, 83, 9, 0.15)'
   },
   { 
-    name: 'Rice Varieties',     
+    id: 'rice',
+    name: 'Ancient Heirloom Grains',     
+    tamilName: 'பாரம்பரிய அரிசி ரகங்கள்',
     iconType: 'wheat',
-    badge: 'Native Grains',
-    desc: 'Karuppu Kavuni, Mappillai Samba & more',
-    items: '4 Products Available'
+    badge: '100% Native Tamil Grains',
+    desc: 'Nutrient-dense indigenous paddy cultivated with zero synthetic fertilizers. High natural fiber, minerals & low glycemic index.',
+    items: '4 Native Grains Available',
+    filterParam: 'All',
+    image: null,
+    origin: 'Thanjavur & Cauvery Delta',
+    highlights: ['Karuppu Kavuni', 'Mappillai Samba', 'Poongar Rice', 'Native Millets'],
+    isFeatured: false,
+    accentGlow: 'rgba(34, 197, 94, 0.15)'
   },
   { 
-    name: 'Natural Sweeteners', 
+    id: 'sweeteners',
+    name: 'Pure Natural Sweeteners', 
+    tamilName: 'இயற்கை நாட்டு சர்க்கரை & தேன்',
     iconType: 'sun',
-    badge: '100% Unrefined',
-    desc: 'Country Sugar, Palm Jaggery & Raw Honey',
-    items: '3 Products Available'
+    badge: '100% Unrefined & Chemical-Free',
+    desc: 'Naturally clarified country sugar, native palm jaggery, and raw forest honey. Zero bone char, bleaching agents or preservatives.',
+    items: '3 Sweet Staples Available',
+    filterParam: 'All',
+    image: null,
+    origin: 'Tirunelveli Palm Groves',
+    highlights: ['Palm Jaggery (Karupatti)', 'Country Sugar', 'Raw Forest Honey'],
+    isFeatured: false,
+    accentGlow: 'rgba(234, 88, 12, 0.15)'
   },
   { 
-    name: 'Herbal Products',    
+    id: 'herbal',
+    name: 'Daily Herbal Wellness',    
+    tamilName: 'ஆரோக்கிய மூலிகை பொடிகள்',
     iconType: 'leaf',
-    badge: 'Daily Wellness',
-    desc: 'Herbal Infusions, Podis & Tonics',
-    items: '4 Products Available'
+    badge: 'Ancestral Herbal Vitality',
+    desc: 'Handpicked wild-crafted botanicals sun-dried to preserve medicinal phyto-nutrients for daily vitality and gut wellness.',
+    items: '4 Herbal Formulations Available',
+    filterParam: 'All',
+    image: null,
+    origin: 'Western Ghats Foothills',
+    highlights: ['Avarampoo Infusion', 'Nilavembu Vitality', 'Tulsi Leaves', 'Moringa Powder'],
+    isFeatured: false,
+    accentGlow: 'rgba(5, 150, 105, 0.15)'
   },
 ];
 
@@ -415,7 +466,7 @@ const StarRating = ({ count = 5 }) => (
 );
 
 export default function HomePage({ onCheckout }) {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState(INITIAL_CATALOG_PRODUCTS);
@@ -462,9 +513,9 @@ export default function HomePage({ onCheckout }) {
   // Products Horizontal Track Ref, Section Ref & Progress State
   const productsSectionRef = useRef(null);
   const productsTrackRef = useRef(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const progressFillRef = useRef(null);
 
-  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth)
+  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth 120 FPS)
   useEffect(() => {
     const section = productsSectionRef.current;
     const track = productsTrackRef.current;
@@ -477,10 +528,17 @@ export default function HomePage({ onCheckout }) {
         return -(trackWidth - parentWidth + 30);
       };
 
-      const tween = gsap.to(track, {
+      const timeline = gsap.timeline();
+
+      // Initial comfortable pause before horizontal slide starts so 1st product stays 100% visible
+      timeline.to(track, {
+        x: 0,
+        duration: 0.1,
+        ease: 'none'
+      }).to(track, {
         x: getScrollAmount,
-        ease: 'none',
-        force3D: true
+        ease: 'power1.inOut',
+        duration: 1
       });
 
       ScrollTrigger.create({
@@ -489,16 +547,18 @@ export default function HomePage({ onCheckout }) {
         start: 'top top',
         end: () => {
           const distance = track.scrollWidth - (track.parentElement ? track.parentElement.clientWidth : window.innerWidth);
-          return `+=${Math.max(1200, distance * 1.15)}`;
+          return `+=${Math.max(1600, distance * 1.3)}`;
         },
         pin: true,
         anticipatePin: 1,
         fastScrollEnd: true,
-        animation: tween,
-        scrub: 0.3, // Seamless 1:1 sync with Lenis lerp momentum
+        animation: timeline,
+        scrub: 1.2, // Ultra-smooth 1:1 hardware accelerated momentum
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          setScrollProgress(self.progress * 100);
+          if (progressFillRef.current) {
+            progressFillRef.current.style.width = `${Math.max(12, self.progress * 100)}%`;
+          }
         }
       });
     }, section);
@@ -653,10 +713,10 @@ export default function HomePage({ onCheckout }) {
             
             {/* Left Column: Brand Story, Headline & CTAs */}
             <div className="hero-text-col">
-              <div className="hero-badge-pill">
-                <span className="badge-pulse-dot" />
+              <div className="hero-badge-capsule">
+                <span className="badge-pulsing-dot" />
                 <Sparkles size={13} className="badge-sparkle-icon" />
-                <span>100% TRADITIONAL • WOOD COLD-PRESSED</span>
+                <span>100% Traditional Chekku &amp; Stone-Ground Harvest</span>
               </div>
 
               <h1 className="hero-main-heading">
@@ -752,26 +812,6 @@ export default function HomePage({ onCheckout }) {
                 onMouseMove={(e) => handleDragMove(e.clientX)}
                 onMouseUp={handleDragEnd}
               >
-                {/* Category Switcher Tabs (Powders vs Oils) */}
-                <div className="artisan-category-switcher">
-                  <button 
-                    className={`artisan-switch-btn ${heroTab === 'powders' ? 'active' : ''}`}
-                    onClick={() => handleCategorySwitch('powders')}
-                  >
-                    <Sparkles size={14} className="switch-icon" />
-                    <span>Spice Powders</span>
-                    <span className="switcher-count-badge">5</span>
-                  </button>
-                  <button 
-                    className={`artisan-switch-btn ${heroTab === 'oils' ? 'active' : ''}`}
-                    onClick={() => handleCategorySwitch('oils')}
-                  >
-                    <Droplets size={14} className="switch-icon" />
-                    <span>Cold-Pressed Oils</span>
-                    <span className="switcher-count-badge">4</span>
-                  </button>
-                </div>
-
                 {/* Dynamic Aura Glow matched to active product */}
                 <div 
                   className="artisan-aura-glow"
@@ -889,6 +929,26 @@ export default function HomePage({ onCheckout }) {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Category Switcher Tabs (Powders vs Oils) placed below the box */}
+                <div className="artisan-category-switcher">
+                  <button 
+                    className={`artisan-switch-btn ${heroTab === 'powders' ? 'active' : ''}`}
+                    onClick={() => handleCategorySwitch('powders')}
+                  >
+                    <Sparkles size={14} className="switch-icon" />
+                    <span>Spice Powders</span>
+                    <span className="switcher-count-badge">5</span>
+                  </button>
+                  <button 
+                    className={`artisan-switch-btn ${heroTab === 'oils' ? 'active' : ''}`}
+                    onClick={() => handleCategorySwitch('oils')}
+                  >
+                    <Droplets size={14} className="switch-icon" />
+                    <span>Cold-Pressed Oils</span>
+                    <span className="switcher-count-badge">4</span>
+                  </button>
                 </div>
 
               </div>
@@ -1085,7 +1145,8 @@ export default function HomePage({ onCheckout }) {
               <div className="products-scroll-progress-container">
                 <div 
                   className="products-scroll-progress-fill" 
-                  style={{ width: `${Math.max(12, scrollProgress)}%` }} 
+                  ref={progressFillRef}
+                  style={{ width: '12%' }} 
                 />
               </div>
             </div>
@@ -1095,53 +1156,149 @@ export default function HomePage({ onCheckout }) {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. CATEGORIES SECTION (Refined White Luxury Cards)
+          4. CATEGORIES SECTION (Curated Visual Bento Showcase)
       ───────────────────────────────────────────────────────────── */}
-      <section id="categories" className="section-categories">
+      <section id="categories" className="section-categories-showcase">
         <div className="container">
-          <div className="section-header text-center">
-            <span className="section-eyebrow">Curated Collections</span>
+          <div className="section-header text-center cat-showcase-header">
+            <div className="cat-eyebrow-pill">
+              <Sparkles size={14} className="cat-pill-sparkle" />
+              <span>HANDCRAFTED HERITAGE COLLECTIONS</span>
+            </div>
             <h2 className="section-headline">Shop By Category</h2>
             <p className="section-subtitle">
-              From cold-pressed cooking oils to aromatic spices and heirloom grains, 
-              discover pure staples crafted for healthy living.
+              From traditional wood-pressed cooking oils to aromatic stone-ground spices and native heirloom grains, 
+              discover pure staples crafted for wholesome living.
             </p>
+            <div className="cat-header-badges">
+              <span className="cat-header-tag">🌱 100% Farm-Direct</span>
+              <span className="cat-header-tag">🪵 Wood-Pressed &lt;40°C</span>
+              <span className="cat-header-tag">✨ Stone-Ground Spices</span>
+              <span className="cat-header-tag">🛡️ Zero Additives</span>
+            </div>
           </div>
 
-          <div className="categories-grid">
-            {CATEGORIES.map((cat) => (
-              <div
-                key={cat.name}
-                className={`category-card cat-${cat.iconType}`}
-                onClick={() => {
-                  setActiveCategory(cat.name);
-                  scrollToSection('products');
-                }}
-              >
-                <div className="category-top-meta">
-                  <div className="category-icon-bubble">
-                    {cat.iconType === 'droplets' && <Droplets size={24} />}
-                    {cat.iconType === 'sparkles' && <Sparkles size={24} />}
-                    {cat.iconType === 'flame' && <Flame size={24} />}
-                    {cat.iconType === 'wheat' && <Wheat size={24} />}
-                    {cat.iconType === 'sun' && <Sun size={24} />}
-                    {cat.iconType === 'leaf' && <Leaf size={24} />}
+          <div className="categories-bento-showcase">
+            {/* Top Row: Two Grande Feature Showcase Cards */}
+            <div className="cat-bento-row-grande">
+              {CATEGORIES.filter(c => c.isFeatured).map((cat) => (
+                <div
+                  key={cat.id || cat.name}
+                  className={`cat-bento-card-grande cat-grande-${cat.id}`}
+                  onClick={() => {
+                    setActiveCategory(cat.filterParam || cat.name);
+                    scrollToSection('products');
+                  }}
+                >
+                  <div className="cat-grande-ambient-glow" style={{ background: cat.accentGlow }} />
+                  
+                  <div className="cat-grande-content">
+                    <div className="cat-grande-badges-wrap">
+                      <span className="cat-grande-badge">
+                        {cat.iconType === 'droplets' ? <Droplets size={14} /> : <Sparkles size={14} />}
+                        {cat.badge}
+                      </span>
+                      {cat.origin && <span className="cat-origin-badge">{cat.origin}</span>}
+                    </div>
+
+                    <div className="cat-grande-titles">
+                      <span className="cat-tamil-title">{cat.tamilName}</span>
+                      <h3 className="cat-grande-heading">{cat.name}</h3>
+                    </div>
+
+                    <p className="cat-grande-desc">{cat.desc}</p>
+
+                    <div className="cat-ingredient-pills">
+                      {cat.highlights?.map((hl, idx) => (
+                        <span key={idx} className="cat-pill-item">
+                          <CheckCircle2 size={12} />
+                          {hl}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="cat-grande-footer">
+                      <span className="cat-grande-items-count">{cat.items}</span>
+                      <button className="btn-cat-grande-cta">
+                        <span>Explore Collection</span>
+                        <ArrowRight size={15} />
+                      </button>
+                    </div>
                   </div>
-                  <span className="category-badge-tag">{cat.badge}</span>
-                </div>
-                <div className="category-info">
-                  <h3 className="category-name">{cat.name}</h3>
-                  <p className="category-summary">{cat.desc}</p>
-                </div>
-                <div className="category-footer-action">
-                  <span className="cat-item-count">{cat.items}</span>
-                  <div className="category-action-link">
-                    <span>Shop</span>
-                    <ArrowRight size={14} />
+
+                  <div className="cat-grande-visual">
+                    <div className="cat-visual-canvas">
+                      {cat.image && (
+                        <img 
+                          src={cat.image} 
+                          alt={cat.name} 
+                          className="cat-grande-primary-img" 
+                          loading="lazy" 
+                        />
+                      )}
+                      {cat.secondaryImg && (
+                        <img 
+                          src={cat.secondaryImg} 
+                          alt="" 
+                          className="cat-grande-secondary-img" 
+                          loading="lazy" 
+                        />
+                      )}
+                    </div>
+                    <div className="cat-floating-micro-badge">
+                      <ShieldCheck size={14} />
+                      <span>{cat.id === 'oils' ? 'Vaagai Chekku Extracted' : 'Stone-Ground at 120 RPM'}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Bottom Row: 4 Heritage Bento Cards */}
+            <div className="cat-bento-row-heritage">
+              {CATEGORIES.filter(c => !c.isFeatured).map((cat) => (
+                <div
+                  key={cat.id || cat.name}
+                  className={`cat-bento-card-compact cat-compact-${cat.id}`}
+                  onClick={() => {
+                    setActiveCategory(cat.filterParam || cat.name);
+                    scrollToSection('products');
+                  }}
+                >
+                  <div className="cat-compact-ambient-glow" style={{ background: cat.accentGlow }} />
+
+                  <div className="cat-compact-header">
+                    <div className="cat-compact-icon-box">
+                      {cat.iconType === 'flame' && <Flame size={20} />}
+                      {cat.iconType === 'wheat' && <Wheat size={20} />}
+                      {cat.iconType === 'sun' && <Sun size={20} />}
+                      {cat.iconType === 'leaf' && <Leaf size={20} />}
+                    </div>
+                    <span className="cat-compact-badge">{cat.badge}</span>
+                  </div>
+
+                  <div className="cat-compact-body">
+                    <span className="cat-compact-tamil">{cat.tamilName}</span>
+                    <h4 className="cat-compact-title">{cat.name}</h4>
+                    <p className="cat-compact-desc">{cat.desc}</p>
+                    
+                    <div className="cat-compact-highlights">
+                      {cat.highlights?.slice(0, 3).map((hl, idx) => (
+                        <span key={idx} className="cat-compact-pill">{hl}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="cat-compact-footer">
+                    <span className="cat-compact-count">{cat.items}</span>
+                    <div className="cat-compact-action">
+                      <span>Shop Now</span>
+                      <ArrowRight size={14} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1737,16 +1894,44 @@ export default function HomePage({ onCheckout }) {
                   <strong>₹{qvPrice * quantity}</strong>
                 </div>
 
-                <button
-                  className="btn-qv-add-cart"
-                  onClick={() => {
-                    addToCart(quickViewProduct, selectedVariant, quantity);
-                    handleCloseQuickView();
-                  }}
-                >
-                  <ShoppingCart size={18} />
-                  <span>Add To Cart</span>
-                </button>
+                <div className="qv-action-buttons-row">
+                  <button
+                    className="btn-qv-add-cart"
+                    onClick={() => {
+                      addToCart(quickViewProduct, selectedVariant, quantity);
+                      handleCloseQuickView();
+                    }}
+                    type="button"
+                  >
+                    <ShoppingCart size={17} />
+                    <span>Add To Cart</span>
+                  </button>
+
+                  <button
+                    className="btn-qv-buy-now"
+                    onClick={() => {
+                      addToCart(quickViewProduct, selectedVariant, quantity);
+                      handleCloseQuickView();
+                      setIsCartOpen(false);
+                      const price = qvPrice * quantity;
+                      const shippingFee = price >= 499 ? 0 : 49;
+                      if (onCheckout) {
+                        onCheckout({
+                          grandTotal: price + shippingFee,
+                          discount: 0,
+                          appliedCoupon: null,
+                          shippingFee
+                        });
+                      } else {
+                        const checkoutBtn = document.querySelector('.checkout-cta') || document.querySelector('.btn-checkout');
+                        if (checkoutBtn) checkoutBtn.click();
+                      }
+                    }}
+                    type="button"
+                  >
+                    <span>Buy Now</span>
+                  </button>
+                </div>
               </div>
 
             </div>

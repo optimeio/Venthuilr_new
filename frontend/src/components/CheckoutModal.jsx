@@ -68,7 +68,7 @@ export default function CheckoutModal({ cartSummary, onClose, onAuthOpen }) {
   return (
     <>
       <div className="modal-overlay" onClick={step !== 'placing' ? onClose : undefined} />
-      <div className="checkout-modal animate-fade-up">
+      <div className="checkout-modal">
         {step !== 'placing' && step !== 'success' && (
           <button className="modal-close" onClick={onClose}><X size={18} /></button>
         )}

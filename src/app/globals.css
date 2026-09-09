@@ -1,0 +1,252 @@
+/* =========================================
+   VENTHULIR — Global Design System
+   Premium Organic E-Commerce (Next.js)
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Brand Colors */
+  --green-dark:    #122b1d;
+  --green-mid:     #1d5435;
+  --green-light:   #2e7d32;
+  --green-pale:    #eef7f2;
+  
+  /* 3rd Accent Color Tokens (Default: Option 1 - Saffron Turmeric Gold) */
+  --accent-color:  #d97706;
+  --accent-hover:  #b45309;
+  --accent-pale:   #fef3c7;
+  --accent-border: #fde68a;
+  --accent-text:   #92400e;
+  --gold:          var(--accent-color);
+  --gold-light:    var(--accent-pale);
+  
+  --cream:         #ffffff;
+  --white:         #ffffff;
+  --text-dark:     #112419;
+  --text-mid:      #3f5848;
+  --text-muted:    #6e8576;
+  --border:        #e4ede6;
+  --shadow-sm:     0 2px 8px rgba(18,43,29,0.05);
+  --shadow-md:     0 8px 32px rgba(18,43,29,0.07);
+  --shadow-lg:     0 20px 60px rgba(18,43,29,0.09);
+  --radius-sm:     8px;
+  --radius-md:     16px;
+  --radius-lg:     24px;
+  --radius-xl:     40px;
+  --transition:    0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --header-h:      72px;
+}
+
+/* 🟡 Option 1: Saffron Turmeric Gold */
+[data-accent="gold"] {
+  --accent-color:  #d97706;
+  --accent-hover:  #b45309;
+  --accent-pale:   #fef3c7;
+  --accent-border: #fde68a;
+  --accent-text:   #92400e;
+  --gold:          #d97706;
+  --gold-light:    #fef3c7;
+}
+
+/* 🔴 Option 2: Chettinad Terracotta Paprika */
+[data-accent="terracotta"] {
+  --accent-color:  #c2410c;
+  --accent-hover:  #9a3412;
+  --accent-pale:   #ffedd5;
+  --accent-border: #fed7aa;
+  --accent-text:   #9a3412;
+  --gold:          #c2410c;
+  --gold-light:    #ffedd5;
+}
+
+/* 🟤 Option 3: Marachekku Copper Amber */
+[data-accent="copper"] {
+  --accent-color:  #b45309;
+  --accent-hover:  #78350f;
+  --accent-pale:   #fef9c3;
+  --accent-border: #fef08a;
+  --accent-text:   #713f12;
+  --gold:          #b45309;
+  --gold-light:    #fef9c3;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: initial;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ffffff;
+  color: var(--text-dark);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
+img { max-width: 100%; display: block; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--green-light); border-radius: 4px; }
+
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Utility */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  color: var(--green-dark);
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 1.05rem;
+  color: var(--text-mid);
+  max-width: 560px;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--green-dark);
+  color: var(--white);
+  border-radius: var(--radius-xl);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  letter-spacing: 0.3px;
+}
+.btn-primary:hover {
+  background: var(--green-mid);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 30px;
+  border: 2px solid var(--green-dark);
+  color: var(--green-dark);
+  border-radius: var(--radius-xl);
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: transparent;
+  transition: var(--transition);
+}
+.btn-outline:hover {
+  background: var(--green-dark);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--green-dark);
+  border-radius: var(--radius-xl);
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.4);
+}
+
+/* Fade-in animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in { animation: fadeIn 0.4s ease both; }
+
+/* Toast override */
+.Toastify__toast { border-radius: var(--radius-md) !important; font-family: 'Inter', sans-serif !important; }

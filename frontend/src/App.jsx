@@ -8,9 +8,11 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider, useCart } from './context/CartContext';
 
 import Navbar        from './components/Navbar';
+import Preloader     from './components/Preloader';
 import CartDrawer    from './components/CartDrawer';
 import AuthModal     from './components/AuthModal';
 import CheckoutModal from './components/CheckoutModal';
+import ThemePreviewBar from './components/ThemePreviewBar';
 import HomePage      from './pages/HomePage';
 import ProductsPage  from './pages/ProductsPage';
 import Footer        from './components/Footer';
@@ -86,12 +88,16 @@ function MainApp() {
     };
   }, []);
 
+  const { setIsCartOpen } = useCart();
+
   const openCheckout = (cartSummary) => {
+    setIsCartOpen(false);
     setCheckoutData(cartSummary);
   };
 
   return (
     <>
+      <Preloader minDuration={2200} />
       <Navbar onAuthOpen={() => setAuthOpen(true)} />
 
       <CartDrawer onCheckout={openCheckout} />
@@ -126,6 +132,8 @@ function MainApp() {
           onAuthOpen={() => { setCheckoutData(null); setAuthOpen(true); }}
         />
       )}
+
+      <ThemePreviewBar />
 
       <ToastContainer position="bottom-right" autoClose={3000} theme="light" />
     </>

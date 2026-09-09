@@ -56,7 +56,7 @@ export default function AuthModal({ onClose }) {
   return (
     <>
       <div className="modal-overlay" onClick={onClose} />
-      <div className="auth-modal animate-fade-up">
+      <div className="auth-modal">
         <button className="modal-close" onClick={onClose}><X size={18} /></button>
 
         {/* Logo */}
