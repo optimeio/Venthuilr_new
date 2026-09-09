@@ -9,7 +9,6 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import AuthModal from '@/components/AuthModal';
 import CheckoutModal from '@/components/CheckoutModal';
-import ThemePreviewBar from '@/components/ThemePreviewBar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Lenis from 'lenis';
@@ -83,8 +82,6 @@ function ProvidersInner({ children }) {
           }}
         />
       )}
-
-      <ThemePreviewBar />
 
       <ToastContainer position="bottom-right" autoClose={3000} theme="light" />
     </UIModalContext.Provider>

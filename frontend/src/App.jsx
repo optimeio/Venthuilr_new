@@ -12,7 +12,6 @@ import Preloader     from './components/Preloader';
 import CartDrawer    from './components/CartDrawer';
 import AuthModal     from './components/AuthModal';
 import CheckoutModal from './components/CheckoutModal';
-import ThemePreviewBar from './components/ThemePreviewBar';
 import HomePage      from './pages/HomePage';
 import ProductsPage  from './pages/ProductsPage';
 import Footer        from './components/Footer';
@@ -132,8 +131,6 @@ function MainApp() {
           onAuthOpen={() => { setCheckoutData(null); setAuthOpen(true); }}
         />
       )}
-
-      <ThemePreviewBar />
 
       <ToastContainer position="bottom-right" autoClose={3000} theme="light" />
     </>

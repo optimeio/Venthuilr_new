@@ -6,69 +6,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Brand Colors */
-  --green-dark:    #122b1d;
-  --green-mid:     #1d5435;
-  --green-light:   #2e7d32;
-  --green-pale:    #eef7f2;
+  /* ══════════════════════════════════════════════════════════════
+     VENTHULIR COLOR IDENTITY PALETTE
+     50% Emerald Source Green : #154734 (RGB 21, 71, 52)
+     30% Creamy Off White     : #FCF5EE (RGB 252, 245, 238)
+     20% Earthy Tan           : #EBD7AE (RGB 235, 215, 174)
+     10% Golden Sun           : #EDB41E (RGB 237, 180, 30)
+     10% Brazil Gold          : #B18845 & #EFDE7D
+     5%  Accent Black         : #000000
+     5%  Accent White         : #FFFFFF
+     ══════════════════════════════════════════════════════════════ */
+
+  /* Primary Brand Greens */
+  --primary-color:         #154734; /* Emerald Source Green */
+  --primary-dark:          #0f3527;
+  --primary-mid:           #154734;
+  --primary-light:         #1d5b43;
+  --primary-pale:          #eaf3ee;
   
-  /* 3rd Accent Color Tokens (Default: Option 1 - Saffron Turmeric Gold) */
-  --accent-color:  #d97706;
-  --accent-hover:  #b45309;
-  --accent-pale:   #fef3c7;
-  --accent-border: #fde68a;
-  --accent-text:   #92400e;
-  --gold:          var(--accent-color);
-  --gold-light:    var(--accent-pale);
-  
-  --cream:         #ffffff;
-  --white:         #ffffff;
-  --text-dark:     #112419;
-  --text-mid:      #3f5848;
-  --text-muted:    #6e8576;
-  --border:        #e4ede6;
-  --shadow-sm:     0 2px 8px rgba(18,43,29,0.05);
-  --shadow-md:     0 8px 32px rgba(18,43,29,0.07);
-  --shadow-lg:     0 20px 60px rgba(18,43,29,0.09);
-  --radius-sm:     8px;
-  --radius-md:     16px;
-  --radius-lg:     24px;
-  --radius-xl:     40px;
-  --transition:    0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --header-h:      72px;
-}
+  --green-dark:            #154734;
+  --green-mid:             #154734;
+  --green-light:           #1d5b43;
+  --green-pale:            #eaf3ee;
 
-/* 🟡 Option 1: Saffron Turmeric Gold */
-[data-accent="gold"] {
-  --accent-color:  #d97706;
-  --accent-hover:  #b45309;
-  --accent-pale:   #fef3c7;
-  --accent-border: #fde68a;
-  --accent-text:   #92400e;
-  --gold:          #d97706;
-  --gold-light:    #fef3c7;
-}
+  /* Primary Backgrounds */
+  --bg-creamy:             #FCF5EE; /* Creamy Off White */
+  --cream:                 #FCF5EE;
+  --white:                 #FFFFFF;
+  --black:                 #000000;
 
-/* 🔴 Option 2: Chettinad Terracotta Paprika */
-[data-accent="terracotta"] {
-  --accent-color:  #c2410c;
-  --accent-hover:  #9a3412;
-  --accent-pale:   #ffedd5;
-  --accent-border: #fed7aa;
-  --accent-text:   #9a3412;
-  --gold:          #c2410c;
-  --gold-light:    #ffedd5;
-}
+  /* Secondary Earthy Tans */
+  --secondary-tan:         #EBD7AE; /* Earthy Tan */
+  --secondary-tan-light:   #f7efe1;
+  --secondary-tan-pale:    #fdfbf7;
+  --border:                #EBD7AE;
+  --border-light:          #f2e7d3;
 
-/* 🟤 Option 3: Marachekku Copper Amber */
-[data-accent="copper"] {
-  --accent-color:  #b45309;
-  --accent-hover:  #78350f;
-  --accent-pale:   #fef9c3;
-  --accent-border: #fef08a;
-  --accent-text:   #713f12;
-  --gold:          #b45309;
-  --gold-light:    #fef9c3;
+  /* Secondary Sun & Accents */
+  --accent-sun:            #EDB41E; /* Golden Sun */
+  --accent-gold:           #B18845; /* Brazil Gold */
+  --accent-gold-light:     #EFDE7D; /* Brazil Gold Highlight */
+
+  /* Active Accent Tokens */
+  --accent-color:          #B18845; /* Brazil Gold */
+  --accent-hover:          #946f33;
+  --accent-pale:           #FCF5EE;
+  --accent-border:         #EBD7AE;
+  --accent-text:           #8c672b;
+  --gold:                  #B18845;
+  --gold-light:            #fdf9f0;
+
+  /* Typography Colors */
+  --text-dark:             #154734;
+  --text-mid:              #284e3c;
+  --text-muted:            #5c7b6c;
+
+  /* Shadows & Radius */
+  --shadow-sm:             0 2px 8px rgba(21, 71, 52, 0.05);
+  --shadow-md:             0 8px 32px rgba(21, 71, 52, 0.08);
+  --shadow-lg:             0 20px 60px rgba(21, 71, 52, 0.12);
+  --radius-sm:             8px;
+  --radius-md:             16px;
+  --radius-lg:             24px;
+  --radius-xl:             40px;
+  --transition:            0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --header-h:              72px;
 }
 
 *, *::before, *::after {
