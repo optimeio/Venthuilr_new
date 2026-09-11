@@ -118,7 +118,17 @@ export default function AdminSidebar({
         {/* Header */}
         <div className="admin-sidebar-header">
           <Link href="/admin" className="admin-sidebar-brand" onClick={handleNavClick}>
-            <div className="admin-brand-icon">
+            <img
+              src="/logo.png"
+              alt="Venthulir Logo"
+              className="admin-brand-logo-img"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                const fb = document.getElementById('admin-fallback-brand-icon');
+                if (fb) fb.style.display = 'flex';
+              }}
+            />
+            <div id="admin-fallback-brand-icon" className="admin-brand-icon" style={{ display: 'none' }}>
               <Leaf size={20} />
             </div>
             {!collapsed && (
