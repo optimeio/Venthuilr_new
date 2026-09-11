@@ -1667,19 +1667,22 @@
 .products-horizontal-wrapper {
   position: relative;
   width: 100%;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .products-horizontal-track {
   display: flex;
   flex-wrap: nowrap;
   gap: 18px;
-  padding: 4px 6px 8px 2px;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  perspective: 1000px;
+  padding: 6px 4px 14px 4px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.products-horizontal-track::-webkit-scrollbar {
+  display: none;
 }
 
 .product-horizontal-item {

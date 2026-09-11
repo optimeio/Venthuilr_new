@@ -29,6 +29,16 @@ export default defineConfig(({ mode }) => {
       },
     server: {
       port: isAdmin ? 5175 : 5173,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+        '/uploads': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        }
+      }
     },
   };
 });

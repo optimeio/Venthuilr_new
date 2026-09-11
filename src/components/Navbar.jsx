@@ -26,7 +26,9 @@ import {
   Star,
   Plus,
   Check,
-  TrendingUp
+  TrendingUp,
+  Package,
+  MapPin
 } from 'lucide-react';
 import './Navbar.css';
 
@@ -73,7 +75,10 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleAuthClick = onAuthOpen || uiModal?.openAuth;
+  const handleAuthClick = () => {
+    setMenuOpen(false);
+    router.push('/login');
+  };
 
   // Enhanced fuzzy matching for instant search
   const searchResults = searchQuery.trim()
@@ -395,20 +400,43 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
 
           {/* Desktop Navigation Links */}
           <div className="navbar-nav-group">
-            <button 
-              type="button" 
+            <Link 
+              href="/"
               className="nav-item-btn"
-              onClick={() => navigateToSection('home', '/')}
+              onClick={(e) => { 
+                setMenuOpen(false); 
+                if (pathname === '/' || pathname === '/home') {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                }
+              }}
             >
               Home
-            </button>
+            </Link>
+
+            <Link 
+              href="/products"
+              className="nav-item-btn"
+              onClick={() => { setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              All Products
+            </Link>
 
             {/* Categories Dropdown */}
-            <div className="nav-dropdown-wrapper" ref={catDropRef}>
+            <div 
+              className="nav-dropdown-wrapper" 
+              ref={catDropRef}
+              onMouseEnter={() => setCategoryDropOpen(true)}
+              onMouseLeave={() => setCategoryDropOpen(false)}
+            >
               <button 
                 type="button" 
                 className={`nav-item-btn with-arrow ${categoryDropOpen ? 'active' : ''}`}
-                onClick={() => setCategoryDropOpen(v => !v)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCategoryDropOpen(v => !v);
+                }}
               >
                 <span>Categories</span>
                 <ChevronDown size={14} className={`chevron-icon ${categoryDropOpen ? 'rotate' : ''}`} />
@@ -418,27 +446,22 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
                 <div className="nav-flyout-menu">
                   <div className="flyout-header">Browse Organic Categories</div>
                   {QUICK_CATEGORIES.map(cat => (
-                    <button
+                    <Link
                       key={cat.id}
-                      type="button"
+                      href={cat.id === 'all' ? '/products' : `/products?category=${encodeURIComponent(cat.filter || cat.name)}`}
                       className="flyout-item"
-                      onClick={() => handleCategorySelect(cat)}
+                      onClick={() => {
+                        setCategoryDropOpen(false);
+                        setMenuOpen(false);
+                      }}
                     >
                       <span className="flyout-emoji">{cat.emoji}</span>
                       <span className="flyout-name">{cat.name}</span>
-                    </button>
+                    </Link>
                   ))}
                 </div>
               )}
             </div>
-
-            <Link 
-              href="/products"
-              className="nav-item-btn"
-              onClick={() => { setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            >
-              All Products
-            </Link>
 
             {/* High-Converting Offer Pill */}
             <Link 
@@ -494,39 +517,115 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
 
                 {userOpen && (
                   <div className="profile-flyout">
-                    <div className="flyout-user-info">
-                      <p className="user-name-bold">{user?.name || 'Customer'}</p>
-                      <p className="user-email-muted">{user?.email || user?.phone}</p>
+                    <div className="flyout-user-header">
+                      <div className="flyout-user-avatar">
+                        {user?.name?.[0]?.toUpperCase() || 'V'}
+                      </div>
+                      <div className="flyout-user-info">
+                        <p className="user-name-bold">{user?.name || 'Customer'}</p>
+                        <p className="user-email-muted">{user?.email || user?.phone}</p>
+                        <div className="flyout-patron-badge">
+                          <ShieldCheck size={11} />
+                          <span>Verified Organic Patron</span>
+                        </div>
+                      </div>
                     </div>
+
                     <div className="flyout-divider" />
-                    {user?.role === 'admin' && (
-                      <Link href="/admin" className="flyout-link" onClick={() => setUserOpen(false)}>
-                        Admin Dashboard
+
+                    <div className="flyout-links-list">
+                      {/* 1. Your Cart */}
+                      <Link href="/cart" className="flyout-link-item" onClick={() => setUserOpen(false)}>
+                        <div className="flyout-icon-box cart-icon">
+                          <ShoppingBag size={16} />
+                        </div>
+                        <div className="flyout-item-text">
+                          <span className="flyout-item-title">Your Cart</span>
+                          <span className="flyout-item-sub">Review basket items</span>
+                        </div>
+                        {cartCount > 0 && <span className="flyout-pill-badge">{cartCount}</span>}
                       </Link>
-                    )}
-                    <Link href="/profile" className="flyout-link" onClick={() => setUserOpen(false)}>
-                      My Orders & Addresses
-                    </Link>
+
+                      {/* 2. My Orders & Live Tracking */}
+                      <Link href="/profile" className="flyout-link-item" onClick={() => setUserOpen(false)}>
+                        <div className="flyout-icon-box orders-icon">
+                          <Package size={16} />
+                        </div>
+                        <div className="flyout-item-text">
+                          <span className="flyout-item-title">My Orders & Tracking</span>
+                          <span className="flyout-item-sub">Track active delivery</span>
+                        </div>
+                      </Link>
+
+                      {/* 3. Delivery Addresses */}
+                      <Link href="/profile" className="flyout-link-item" onClick={() => setUserOpen(false)}>
+                        <div className="flyout-icon-box address-icon">
+                          <MapPin size={16} />
+                        </div>
+                        <div className="flyout-item-text">
+                          <span className="flyout-item-title">Saved Addresses</span>
+                          <span className="flyout-item-sub">Manage shipping places</span>
+                        </div>
+                      </Link>
+
+                      {/* 4. Personal Profile */}
+                      <Link href="/profile" className="flyout-link-item" onClick={() => setUserOpen(false)}>
+                        <div className="flyout-icon-box profile-icon">
+                          <User size={16} />
+                        </div>
+                        <div className="flyout-item-text">
+                          <span className="flyout-item-title">Account Details</span>
+                          <span className="flyout-item-sub">Edit name & mobile</span>
+                        </div>
+                      </Link>
+
+                      {/* 5. Wishlist */}
+                      <Link href="/products" className="flyout-link-item" onClick={() => setUserOpen(false)}>
+                        <div className="flyout-icon-box wish-icon">
+                          <Heart size={16} />
+                        </div>
+                        <div className="flyout-item-text">
+                          <span className="flyout-item-title">Saved Wishlist</span>
+                          <span className="flyout-item-sub">Favorites & bookmarks</span>
+                        </div>
+                      </Link>
+
+                      {/* Admin Dashboard if applicable */}
+                      {(user?.isAdmin || user?.role === 'admin') && (
+                        <Link href="/admin" className="flyout-link-item admin-link" onClick={() => setUserOpen(false)}>
+                          <div className="flyout-icon-box admin-icon">
+                            <ShieldCheck size={16} />
+                          </div>
+                          <div className="flyout-item-text">
+                            <span className="flyout-item-title">Admin Dashboard</span>
+                            <span className="flyout-item-sub">Inventory & management</span>
+                          </div>
+                        </Link>
+                      )}
+                    </div>
+
+                    <div className="flyout-divider" />
+
                     <button 
                       onClick={() => { logout(); setUserOpen(false); }} 
-                      className="flyout-logout-btn"
+                      className="flyout-logout-row"
                       type="button"
                     >
-                      <LogOut size={14} />
+                      <LogOut size={15} />
                       <span>Sign Out</span>
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <button 
+              <Link 
+                href="/login"
                 className="btn-header-signin" 
-                onClick={handleAuthClick}
-                type="button"
+                onClick={() => setMenuOpen(false)}
               >
                 <User size={15} />
                 <span>Sign In</span>
-              </button>
+              </Link>
             )}
 
             {/* Mobile Hamburger Toggle */}
@@ -597,13 +696,14 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
             {/* Mobile Auth Button */}
             <div className="mobile-panel-footer">
               {!isAuthenticated ? (
-                <button 
+                <Link 
+                  href="/login"
                   className="mobile-auth-cta" 
-                  onClick={() => { setMenuOpen(false); handleAuthClick && handleAuthClick(); }}
+                  onClick={() => setMenuOpen(false)}
                 >
                   <User size={16} />
                   <span>Sign In / Register</span>
-                </button>
+                </Link>
               ) : (
                 <button 
                   className="mobile-auth-cta logout" 

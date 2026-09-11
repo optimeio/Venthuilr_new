@@ -1,0 +1,778 @@
+/* ==========================================================================
+   VENTHULIR — LUXURY CUSTOMER MEMBER SUITE
+   Aesthetic: "Royal Organic Patron" | Warm Cream, Deep Emerald & Regal Gold
+   ========================================================================== */
+
+.member-suite-container {
+  min-height: calc(100vh - 120px);
+  background-color: #f9f7f2;
+  color: #15221b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 32px 20px 60px;
+}
+
+.member-suite-wrapper {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* ── 1. Top Luxury Member Header ───────────────────────────────────────── */
+.member-header-card {
+  background: linear-gradient(135deg, #09261a 0%, #0f3d2a 60%, #154734 100%);
+  border-radius: 20px;
+  padding: 28px 32px;
+  color: #ffffff;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 61, 42, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.member-header-card::after {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.member-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.member-profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.member-avatar-gold {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37 0%, #9a7615 100%);
+  color: #09261a;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 24px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  border: 2px solid #ffffff;
+  flex-shrink: 0;
+}
+
+.member-name-heading {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px;
+  letter-spacing: 0.04em;
+}
+
+.member-meta-pills {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.member-tier-badge {
+  background: rgba(212, 175, 55, 0.2);
+  color: #f4c96b;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.member-email-text {
+  color: #a7f3d0;
+  font-size: 12.5px;
+}
+
+.member-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.member-shop-btn {
+  background: #d4af37;
+  color: #09261a;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.member-shop-btn:hover {
+  background: #e5c158;
+  transform: translateY(-1px);
+}
+
+/* ── 2. Two-Column Dashboard Layout ────────────────────────────────────── */
+.member-dashboard-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+@media (max-width: 960px) {
+  .member-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Left Rail Navigation ──────────────────────────────────────────────── */
+.member-nav-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e6e1d6;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 100px;
+}
+
+.member-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: #4a5e52;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.member-nav-item:hover {
+  background: #f4f0e6;
+  color: #0f3d2a;
+}
+
+.member-nav-item.active {
+  background: #0f3d2a;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.member-nav-item.active .member-nav-icon {
+  color: #d4af37;
+}
+
+.member-nav-left-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.member-nav-count-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #edf6f1;
+  color: #0f3d2a;
+}
+
+.member-nav-item.active .member-nav-count-pill {
+  background: rgba(212, 175, 55, 0.25);
+  color: #f4c96b;
+}
+
+.member-nav-divider {
+  height: 1px;
+  background: #ece7db;
+  margin: 8px 6px;
+}
+
+.member-signout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.member-signout-btn:hover {
+  background: #fef2f2;
+}
+
+/* ── Right Content Area ────────────────────────────────────────────────── */
+.member-content-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e6e1d6;
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.member-tab-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0ebe0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.member-tab-title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f3d2a;
+  margin: 0 0 4px;
+}
+
+.member-tab-subtitle {
+  font-size: 13px;
+  color: #788c81;
+  margin: 0;
+}
+
+/* ── Order Cards ───────────────────────────────────────────────────────── */
+.member-order-item-card {
+  background: #faf8f5;
+  border: 1px solid #e6e1d6;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s;
+}
+
+.member-order-item-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.order-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ece7db;
+  margin-bottom: 16px;
+}
+
+.order-id-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-id-code {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f3d2a;
+  background: #ffffff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #e0d8cb;
+}
+
+.order-date-text {
+  font-size: 12.5px;
+  color: #788c81;
+}
+
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.order-status-badge.pending { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.order-status-badge.confirmed { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.order-status-badge.shipped { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+.order-status-badge.delivered { background: #edfcf2; color: #15803d; border: 1px solid #bbf7d0; }
+.order-status-badge.cancelled { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+/* ── Visual Tracking Timeline Stepper ──────────────────────────────────── */
+.order-tracking-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 20px 0 24px;
+  padding: 0 10px;
+}
+
+.order-tracking-timeline::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: #e2ddd3;
+  z-index: 1;
+}
+
+.order-timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+}
+
+.timeline-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 13px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.order-timeline-step.completed .timeline-dot {
+  background: #0f3d2a;
+  border-color: #0f3d2a;
+  color: #d4af37;
+}
+
+.order-timeline-step.active .timeline-dot {
+  background: #d4af37;
+  border-color: #9a7615;
+  color: #09261a;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25);
+}
+
+.timeline-step-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.order-timeline-step.completed .timeline-step-label,
+.order-timeline-step.active .timeline-step-label {
+  color: #0f3d2a;
+  font-weight: 700;
+}
+
+/* ── Item Line List ────────────────────────────────────────────────────── */
+.order-items-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ece7db;
+  gap: 12px;
+}
+
+.order-item-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-item-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2ddd3;
+}
+
+.order-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #15221b;
+}
+
+.order-item-variant {
+  font-size: 11.5px;
+  color: #788c81;
+}
+
+.order-item-pricing {
+  text-align: right;
+  font-size: 13.5px;
+}
+
+.order-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #ece7db;
+}
+
+.order-grand-total {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f3d2a;
+}
+
+.order-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-cancel-btn {
+  background: transparent;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.order-cancel-btn:hover {
+  background: #fef2f2;
+}
+
+/* ── Coupon Cards ──────────────────────────────────────────────────────── */
+.coupons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.member-coupon-card {
+  background: #faf8f5;
+  border: 1.5px dashed #d4af37;
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.coupon-code-badge {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f3d2a;
+  letter-spacing: 1px;
+}
+
+.coupon-copy-btn {
+  background: #0f3d2a;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.coupon-copy-btn:hover {
+  background: #154734;
+}
+
+/* ── Empty State ───────────────────────────────────────────────────────── */
+.member-empty-state {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.member-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #edf6f1;
+  color: #0f3d2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+/* ── Forms (Profile & Address) ─────────────────────────────────────────── */
+.member-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .member-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.member-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.member-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.member-form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #233e30;
+}
+
+.member-form-input,
+.member-form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #dcd7cc;
+  background: #faf8f5;
+  font-size: 14px;
+  color: #15221b;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.member-form-input:focus,
+.member-form-textarea:focus {
+  outline: none;
+  border-color: #0f3d2a;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 61, 42, 0.1);
+}
+
+.member-form-input:disabled {
+  background: #f0ece3;
+  color: #788c81;
+  cursor: not-allowed;
+}
+
+.member-form-hint {
+  font-size: 12px;
+  color: #788c81;
+}
+
+.member-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.member-save-btn {
+  background: #0f3d2a;
+  color: #ffffff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(15, 61, 42, 0.2);
+}
+
+.member-save-btn:hover {
+  background: #154734;
+  transform: translateY(-1px);
+}
+
+.member-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Address Cards Grid ────────────────────────────────────────────────── */
+.member-addresses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.member-address-card {
+  background: #faf8f5;
+  border: 1.5px solid #e0d8cb;
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.member-address-card.default {
+  border-color: #0f3d2a;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 61, 42, 0.08);
+}
+
+.member-address-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #0f3d2a;
+  margin-bottom: 8px;
+}
+
+.member-address-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #15221b;
+  margin-bottom: 6px;
+}
+
+.member-address-text {
+  font-size: 13.5px;
+  color: #4a5e52;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.member-address-phone {
+  font-size: 13px;
+  color: #788c81;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Support & Concierge Card ──────────────────────────────────────────── */
+.member-support-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .member-support-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+.member-contact-info-card {
+  background: linear-gradient(135deg, #09261a 0%, #0f3d2a 100%);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.member-contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.member-contact-icon {
+  color: #d4af37;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.whatsapp-support-btn {
+  background: #25d366;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  transition: all 0.2s;
+}
+
+.whatsapp-support-btn:hover {
+  background: #20ba5a;
+  transform: translateY(-1px);
+}
+
+/* ── Loading Spinner ───────────────────────────────────────────────────── */
+@keyframes memberSpin {
+  to { transform: rotate(360deg); }
+}
+
+.member-spin {
+  animation: memberSpin 1s linear infinite;
+}
+

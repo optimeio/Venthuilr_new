@@ -512,14 +512,14 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
                 )}
               </div>
             ) : (
-              <button 
+              <Link 
+                to="/login"
                 className="btn-header-signin" 
-                onClick={onAuthOpen}
-                type="button"
+                style={{ textDecoration: 'none' }}
               >
                 <User size={15} />
                 <span>Sign In</span>
-              </button>
+              </Link>
             )}
 
             {/* Mobile Hamburger Toggle */}
@@ -592,7 +592,7 @@ export default function Navbar({ onAuthOpen, onSearchOpen }) {
               {!isAuthenticated ? (
                 <button 
                   className="mobile-auth-cta" 
-                  onClick={() => { setMenuOpen(false); onAuthOpen && onAuthOpen(); }}
+                  onClick={() => { setMenuOpen(false); navigate('/login'); }}
                 >
                   <User size={16} />
                   <span>Sign In / Register</span>

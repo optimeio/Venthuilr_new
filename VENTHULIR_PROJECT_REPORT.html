@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venthulir — Master Technical Architecture & End-to-End Dataflow Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+    :root {
+      --primary: #0f3d2a;
+      --primary-dark: #071f15;
+      --gold: #c9922c;
+      --gold-light: #fef9ee;
+      --slate: #0f172a;
+      --slate-muted: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --code-bg: #0b1511;
+      --code-text: #6ee7b7;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--slate);
+      line-height: 1.6;
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .header-banner {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: #ffffff;
+      padding: 48px 40px;
+      border-bottom: 4px solid var(--gold);
+      position: relative;
+    }
+
+    .brand-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 12px;
+      background: rgba(201, 146, 44, 0.15);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(201, 146, 44, 0.3);
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .header-desc {
+      font-size: 15px;
+      color: #cbd5e1;
+      max-width: 800px;
+    }
+
+    .meta-bar {
+      display: flex;
+      gap: 24px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+      color: #94a3b8;
+      flex-wrap: wrap;
+    }
+
+    .meta-item strong {
+      color: #ffffff;
+    }
+
+    .content-body {
+      padding: 40px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 36px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate);
+      margin: 24px 0 10px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    ul, ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 28px;
+      font-size: 13.5px;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      color: var(--slate);
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #334155;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-gold { background: #fef3c7; color: #92400e; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .info-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .info-card p {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 0;
+    }
+
+    .diagram-box {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      margin: 18px 0 24px;
+      border: 1px solid rgba(201, 146, 44, 0.3);
+      line-height: 1.4;
+      white-space: pre;
+    }
+
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(15, 61, 42, 0.25);
+    }
+
+    .print-btn:hover {
+      background: #154734;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #0f172a;
+      border: 1px solid var(--border);
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+      .container {
+        box-shadow: none;
+        border: none;
+      }
+      .print-btn {
+        display: none;
+      }
+      .diagram-box {
+        border: 1px solid #333;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-banner">
+      <span class="brand-tag">Master System Architecture & Dataflow Specification</span>
+      <h1>Venthulir Platform Architecture & Dataflow Specification</h1>
+      <div class="header-desc">
+        Complete end-to-end technical reference, sequence diagrams, database schemas, API routes, and operational runbook for the Royal Venthulir Fullstack Next.js 15 Platform.
+      </div>
+      <div class="meta-bar">
+        <div class="meta-item">Version: <strong>1.0.0 Master</strong></div>
+        <div class="meta-item">Date: <strong>September 2026</strong></div>
+        <div class="meta-item">Runtime: <strong>Next.js 15 App Router (Fullstack)</strong></div>
+        <div class="meta-item">Database: <strong>MongoDB Atlas Cluster</strong></div>
+      </div>
+    </div>
+
+    <div class="content-body">
+      <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+
+      <h2>1. High-Level Architecture Overview</h2>
+      <p>
+        Venthulir is an organic e-commerce ecosystem and operations platform. It combines a customer storefront with a full-featured Executive Operations Console (`/admin`) and Customer Member Suite (`/profile`).
+      </p>
+
+      <div class="diagram-box">
++---------------------------------------------------------------------------------------------------+
+|                                      CLIENT / USER BROWSER                                        |
+|                                                                                                   |
+|   +---------------------------------------+       +-------------------------------------------+   |
+|   |         PUBLIC STOREFRONT             |       |         EXECUTIVE ADMIN CONSOLE           |   |
+|   |   - Hero & Categories Showcase        |       |   - Dashboard (Revenue, Orders, Alerts)   |   |
+|   |   - Product Detail (Variant Matrix)   |       |   - Catalog & Local Image Upload          |   |
+|   |   - Cart & Checkout Subsystem         |       |   - Warehouse Inventory Control           |   |
+|   |   - Member Suite (/profile - 5 Tabs)  |       |   - Order Lifecycle & Receipts            |   |
+|   +---------------------------------------+       +-------------------------------------------+   |
+|                        ▲                                                ▲                         |
+|                        │ HTTP/HTTPS                                     │ HTTP/HTTPS              |
+|                        ▼                                                ▼                         |
++---------------------------------------------------------------------------------------------------+
+|                                 NEXT.JS 15 FULLSTACK SERVER LAYER                                 |
+|                                                                                                   |
+|   +-------------------------------------------------------------------------------------------+   |
+|   |                                     APP ROUTER RUNTIME                                    |   |
+|   |   - Server Components (SSR / Static Cache)                                                |   |
+|   |   - API Route Handlers (/api/auth, /api/products, /api/orders, /api/inventory, etc.)      |   |
+|   |   - Route-Aware Smooth Scroll Controller (Lenis bypass on /admin & /profile)              |   |
+|   +-------------------------------------------------------------------------------------------+   |
+|                        │                                                │                         |
+|           Mongoose ODM │                                   SMTP SSL 465 │ Nodemailer Engine       |
+|                        ▼                                                ▼                         |
++-----------------------------------+               +-----------------------------------------------+
+|         MONGODB ATLAS CLUSTER     |               |             GMAIL / RESEND SMTP               |
+|                                   |               |                                               |
+|   - Users & Admin Auth Records    |               |   - Verification Code Delivery (Inbox-First)  |
+|   - Products, Variants & Inventory|               |   - Order Confirmation Receipts               |
+|   - Orders & Timeline History     |               |   - Anti-Spam Transactional Envelope          |
+|   - Coupons, Offers & Inquiries   |               |                                               |
++-----------------------------------+               +-----------------------------------------------+
+      </div>
+
+      <h2>2. End-to-End System Dataflows</h2>
+
+      <h3>2.1 Customer Registration & Email Verification Dataflow</h3>
+      <p>Sequence diagram for customer account creation, OTP generation, authenticated Gmail SMTP dispatch, and email verification:</p>
+      <div class="diagram-box">
+[Customer Browser]               [Next.js API Handler]             [Gmail SMTP Server]            [MongoDB Atlas]
+        │                                  │                                │                            │
+        │── 1. POST /api/auth/register ────>│                                │                            │
+        │      { name, email, password }   │                                │                            │
+        │                                  │── 2. Check existing email ─────────────────────────────────>│
+        │                                  │<── 3. null (Not registered) ────────────────────────────────│
+        │                                  │                                │                            │
+        │                                  │── 4. Generate 6-digit OTP      │                            │
+        │                                  │      Hash password (Bcrypt)    │                            │
+        │                                  │                                │                            │
+        │                                  │── 5. Send verification email ─>│                            │
+        │                                  │      (Port 465 SSL, headers:   │                            │
+        │                                  │       Auto-Submitted: auto)    │                            │
+        │                                  │<── 6. 250 OK (Queued for Inbox)│                            │
+        │                                  │                                │                            │
+        │                                  │── 7. Store user in DB ─────────────────────────────────────>│
+        │                                  │      { email, otp, isVerified: false }                      │
+        │                                  │                                │                            │
+        │<── 8. 201 Created { msg } ───────│                                │                            │
+        │                                  │                                │                            │
+        │── 9. POST /api/auth/verify-otp ─>│                                │                            │
+        │      { email, otp: "123456" }    │                                │                            │
+        │                                  │── 10. Query user by email & OTP ───────────────────────────>│
+        │                                  │<── 11. User record matched ─────────────────────────────────│
+        │                                  │                                │                            │
+        │                                  │── 12. Update isVerified: true ─────────────────────────────>│
+        │                                  │── 13. Sign JWT Token           │                            │
+        │<── 14. 200 OK { token, user } ───│                                │                            │
+      </div>
+
+      <h3>2.2 Authentication, Admin Guard & JWT Session Dataflow</h3>
+      <p>Handles user login, credential verification, auto-bootstrap of the master administrator, and JWT token issuance:</p>
+      <div class="diagram-box">
+[Admin / User Browser]           [Next.js API: /api/auth/login]            [Database Layer: MongoDB]
+         │                                      │                                      │
+         │── 1. POST /api/auth/login ──────────>│                                      │
+         │      { email: "admin",               │                                      │
+         │        password: "admin123" }        │                                      │
+         │                                      │── 2. Sanitize & map "admin"          │
+         │                                      │      to "admin@venthulir.com"        │
+         │                                      │                                      │
+         │                                      │── 3. Query User record ─────────────>│
+         │                                      │<── 4. Return user / null ────────────│
+         │                                      │                                      │
+         │                                      │── 5. Auto-Bootstrap Check:           │
+         │                                      │      If user is null & creds match   │
+         │                                      │      seed master admin account ─────>│
+         │                                      │                                      │
+         │                                      │── 6. Compare Bcrypt password hash    │
+         │                                      │      Verify user.isAdmin === true    │
+         │                                      │                                      │
+         │                                      │── 7. Generate HS256 JWT Token        │
+         │                                      │      { id, isAdmin: true, name }     │
+         │                                      │                                      │
+         │<── 8. Return 200 OK ─────────────────│                                      │
+         │      { token, user: { isAdmin: true } }                                     │
+         │                                                                             │
+         │── 9. Save in localStorage:                                                  │
+         │      venthulir_token & venthulir_user                                       │
+         │── 10. AdminGuard renders Executive Console                                  │
+      </div>
+
+      <h3>2.3 Order Placement & Stock Depletion Dataflow</h3>
+      <p>Handles cart checkout, order persistence, payment status, and inventory decrement:</p>
+      <div class="diagram-box">
+[Checkout Page]                [API: /api/orders]              [MongoDB: Order]              [MongoDB: Product]
+       │                                │                              │                             │
+       │── 1. POST /api/orders ────────>│                              │                             │
+       │      { items, shippingAddress, │                              │                             │
+       │        paymentMethod, coupon } │                              │                             │
+       │                                │── 2. Validate Cart & Prices ─┼────────────────────────────>│
+       │                                │<── 3. Stock verified ────────┼─────────────────────────────│
+       │                                │                              │                             │
+       │                                │── 4. Generate Order ID:      │                             │
+       │                                │      "VNT-ORD-98421"         │                             │
+       │                                │                              │                             │
+       │                                │── 5. Insert Order record ───>│                             │
+       │                                │      status: "Pending"       │                             │
+       │                                │                              │                             │
+       │                                │── 6. Decrement Stock Units ──┼────────────────────────────>│
+       │                                │      $inc: { currentStock:   │                             │
+       │                                │              -item.quantity }│                             │
+       │                                │                              │                             │
+       │<── 7. 201 Created { order } ───│                              │                             │
+       │                                │                              │                             │
+       │── 8. Clear Cart Context ───────│                              │                             │
+       │── 9. Redirect to Confirmation  │                              │                             │
+      </div>
+
+      <h3>2.4 Admin Product Creation & Local Image Upload Dataflow</h3>
+      <p>Allows adding products with local computer image files and multi-weight variants:</p>
+      <div class="diagram-box">
+[Admin Modal UI]                 [FileReader Encoder]               [Next.js API: /api/products]     [MongoDB Atlas]
+       │                                  │                                      │                          │
+       │── 1. Admin selects image file ──>│                                      │                          │
+       │      (e.g., coconut_oil.jpg)     │                                      │                          │
+       │                                  │── 2. Convert to Base64 Data URI ────>│                          │
+       │<── 3. Render instant preview ────│      data:image/jpeg;base64,...      │                          │
+       │                                                                         │                          │
+       │── 4. Admin configures variants:                                         │                          │
+       │      • 500ml: ₹240 (SKU: VNT-COC-500)                                   │                          │
+       │      • 1000ml: ₹450 (SKU: VNT-COC-1L)                                   │                          │
+       │                                                                         │                          │
+       │── 5. Submit "Save Heritage Product" ───────────────────────────────────>│                          │
+       │                                                                         │── 6. Validate & Sanitize │
+       │                                                                         │      Create Slug         │
+       │                                                                         │                          │
+       │                                                                         │── 7. Product.create() ──>│
+       │                                                                         │<── 8. Saved Document ────│
+       │                                                                         │                          │
+       │<── 9. HTTP 201 Created { product } ─────────────────────────────────────│                          │
+       │── 10. Trigger Catalog Refetch & Toast Notification                      │                          │
+      </div>
+
+      <h3>2.5 Dual-Pane Independent Scrolling Architecture</h3>
+      <p>Decouples sidebar navigation scrolling from the main operations canvas:</p>
+      <div class="diagram-box">
++-----------------------------------------------------------------------------------------------+
+| BROWSER WINDOW (100vw, 100vh)                                                                 |
+| CSS Rule: body { overflow: hidden; }                                                          |
+| Lenis Smooth-Scroll: Route-Aware Middleware DISBLES Lenis on /admin and /profile routes       |
+|                                                                                               |
+|  +-------------------------------------+   +-----------------------------------------------+  |
+|  | LEFT SIDEBAR CONTAINER              |   | RIGHT MAIN OPERATIONS CONTAINER               |  |
+|  | (.admin-sidebar)                    |   | (.admin-main)                                 |  |
+|  | height: 100vh;                      |   | height: 100vh; overflow: hidden;              |  |
+|  | overflow-y: auto;                   |   |                                               |  |
+|  | overscroll-behavior: contain;       |   |  +-----------------------------------------+  |  |
+|  |                                     |   |  | FIXED STICKY TOPBAR HEADER              |  |  |
+|  | [ Brand Logo & Identity ]           |   |  | height: 64px; flex-shrink: 0;           |  |  |
+|  | [ Navigation Link: Dashboard ]      |   |  +-----------------------------------------+  |  |
+|  | [ Navigation Link: Products ]       |   |                                               |  |
+|  | [ Navigation Link: Categories ]     |   |  +-----------------------------------------+  |  |
+|  | [ Navigation Link: Inventory ]      |   |  | INDEPENDENT SCROLL CANVAS               |  |  |
+|  | [ Navigation Link: Orders ]         |   |  | (.admin-page-content)                   |  |  |
+|  | [ Navigation Link: Customers ]      |   |  | height: calc(100vh - 64px);             |  |  |
+|  | [ Navigation Link: Coupons ]        |   |  | overflow-y: auto;                       |  |  |
+|  | [ Navigation Link: Analytics ]      |   |  | overscroll-behavior: contain;           |  |  |
+|  |                                     |   |  |                                         |  |  |
+|  |                                     |   |  | [ KPI Stat Cards Grid ]                 |  |  |
+|  | [ Admin Profile Sticky Footer ]     |   |  | [ Filter Tabs Bar (All, Low Stock) ]    |  |  |
+|  |                                     |   |  | [ Responsive Data Table / Content ]     |  |  |
+|  |  * SCROLLS ON ITS OWN WHEEL *       |   |  |  * SCROLLS ON ITS OWN WHEEL *           |  |  |
+|  +-------------------------------------+   +--+-----------------------------------------+--+  |
++-----------------------------------------------------------------------------------------------+
+      </div>
+
+      <h2>3. Complete Database Models & Schema Specifications</h2>
+      <div class="diagram-box">
+                             +-------------------+
+                             |      User         |
+                             +-------------------+
+                             | _id               |
+                             | name              |
+                             | email (unique)    |
+                             | password (hash)   |
+                             | phone             |
+                             | isAdmin (boolean) |
+                             | deliveryAddress   |
+                             +---------+---------+
+                                       │ 1
+                                       │
+                                       │ places
+                                       │
+                                       ▼ *
++--------------------+       +-------------------+       +-------------------+
+|      Category      |       |      Order        |       |      Coupon       |
++--------------------+       +-------------------+       +-------------------+
+| _id                |       | _id               |       | _id               |
+| name               |       | orderNumber       |       | code (unique)     |
+| slug               |       | user (ref: User)  |       | discountType      |
+| taxRate            |       | items [Product]   |       | discountValue     |
+| sortOrder          |       | totalAmount       |       | minOrderAmount    |
+| isActive           |       | orderStatus       |       | validUntil        |
++---------+----------+       | paymentStatus     |       | usageLimit        |
+          │                  | statusHistory     |       +-------------------+
+          │ organizes        +-------------------+
+          │
+          ▼ *
++--------------------+       +-------------------+       +-------------------+
+|      Product       |       |  ContactMessage   |       |      Banner       |
++--------------------+       +-------------------+       +-------------------+
+| _id                |       | _id               |       | _id               |
+| name               |       | name              |       | title             |
+| productCode (SKU)  |       | email             |       | subtitle          |
+| price / mrp        |       | phone             |       | imageUrl          |
+| currentStock       |       | subject           |       | linkUrl           |
+| variants [Size]    |       | message           |       | isActive          |
+| isFeatured         |       | status            |       +-------------------+
++--------------------+       +-------------------+
+      </div>
+
+      <h2>4. Complete REST API Route Registry (44+ Endpoints)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Endpoint Route</th>
+            <th>HTTP Method</th>
+            <th>Authentication</th>
+            <th>Functionality Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/api/auth/register</code></td>
+            <td><span class="badge badge-gold">POST</span></td>
+            <td>Public</td>
+            <td>Registers customer, hashes password, generates OTP, sends verification email.</td>
+          </tr>
+          <tr>
+            <td><code>/api/auth/verify-otp</code></td>
+            <td><span class="badge badge-gold">POST</span></td>
+            <td>Public</td>
+            <td>Validates OTP and activates user account.</td>
+          </tr>
+          <tr>
+            <td><code>/api/auth/login</code></td>
+            <td><span class="badge badge-gold">POST</span></td>
+            <td>Public</td>
+            <td>Authenticates credentials, auto-provisions master admin if needed, returns JWT.</td>
+          </tr>
+          <tr>
+            <td><code>/api/auth/me</code></td>
+            <td><span class="badge badge-blue">GET</span></td>
+            <td>Bearer JWT</td>
+            <td>Returns current authenticated profile session.</td>
+          </tr>
+          <tr>
+            <td><code>/api/auth/update-profile</code></td>
+            <td><span class="badge badge-gray">PUT</span></td>
+            <td>Bearer JWT</td>
+            <td>Updates personal information and delivery address.</td>
+          </tr>
+          <tr>
+            <td><code>/api/products</code></td>
+            <td><span class="badge badge-blue">GET</span></td>
+            <td>Public / Admin</td>
+            <td>Returns catalog with category, search, and pagination filters.</td>
+          </tr>
+          <tr>
+            <td><code>/api/products</code></td>
+            <td><span class="badge badge-gold">POST</span></td>
+            <td>Admin JWT</td>
+            <td>Creates new product with multi-weight variants and images.</td>
+          </tr>
+          <tr>
+            <td><code>/api/products/[id]</code></td>
+            <td><span class="badge badge-gray">PUT</span></td>
+            <td>Admin JWT</td>
+            <td>Updates product metadata, pricing, or stock units.</td>
+          </tr>
+          <tr>
+            <td><code>/api/orders</code></td>
+            <td><span class="badge badge-gold">POST</span></td>
+            <td>User JWT</td>
+            <td>Submits new order, validates stock, and decrements inventory.</td>
+          </tr>
+          <tr>
+            <td><code>/api/orders/[id]</code></td>
+            <td><span class="badge badge-gray">PUT</span></td>
+            <td>Admin JWT</td>
+            <td>Transitions order lifecycle status (Pending ➔ Delivered).</td>
+          </tr>
+          <tr>
+            <td><code>/api/coupons</code></td>
+            <td><span class="badge badge-gold">POST</span></td>
+            <td>Admin JWT</td>
+            <td>Registers new promo code with usage limit rules.</td>
+          </tr>
+          <tr>
+            <td><code>/api/analytics</code></td>
+            <td><span class="badge badge-blue">GET</span></td>
+            <td>Admin JWT</td>
+            <td>Returns computed revenue, order velocity, and sales distributions.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>5. Verified Administrator Access</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Username / Email</th>
+            <th>Default Password</th>
+            <th>Access URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-gold">Master Admin</span></td>
+            <td><code>admin</code> or <code>admin@venthulir.com</code></td>
+            <td><code>admin123</code></td>
+            <td><a href="http://localhost:3000/admin" target="_blank">http://localhost:3000/admin</a></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">Executive Admin</span></td>
+            <td><code>mentorixacademy.ma@gmail.com</code></td>
+            <td><code>Test@123</code></td>
+            <td><a href="http://localhost:3000/admin" target="_blank">http://localhost:3000/admin</a></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-success">Operations Admin</span></td>
+            <td><code>thesmgroups@gmail.com</code></td>
+            <td><code>Admin@123</code></td>
+            <td><a href="http://localhost:3000/admin" target="_blank">http://localhost:3000/admin</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</body>
+</html>

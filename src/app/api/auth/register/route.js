@@ -11,28 +11,39 @@ export async function POST(request) {
     await connectDB();
     const { name, email, phone, password, address, city, state, zipCode } = await request.json();
 
-    if (!phone) {
-      return NextResponse.json({ message: 'Phone number is required.' }, { status: 400 });
+    if (!name || !email || !phone || !password) {
+      return NextResponse.json({ msg: 'Please provide full name, email, phone number, and password.' }, { status: 400 });
     }
 
-    const record = await OtpStore.findOne({ email, type: 'register', verified: true });
-    if (!record || new Date() > record.expiresAt) {
-      return NextResponse.json({ msg: 'Email not verified or session expired. Please verify your email again.' }, { status: 400 });
+    if (password.length < 6) {
+      return NextResponse.json({ msg: 'Password must be at least 6 characters long.' }, { status: 400 });
     }
 
-    let existingUser = await User.findOne({ email });
+    let existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
-      return NextResponse.json({ msg: 'Identity already exists' }, { status: 400 });
+      return NextResponse.json({ msg: 'An account with this email already exists. Please sign in instead.' }, { status: 400 });
     }
 
-    await OtpStore.deleteOne({ email, type: 'register' });
+    // Clean up any pending register OTPs
+    await OtpStore.deleteMany({ email: email.toLowerCase().trim(), type: 'register' }).catch(() => {});
 
-    const salt = await bcrypt.genSalt(6);
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const deliveryAddress = { address: address || '', city: city || '', state: state || '', zipCode: zipCode || '' };
+    const deliveryAddress = { 
+      address: address || '', 
+      city: city || '', 
+      state: state || '', 
+      zipCode: zipCode || '' 
+    };
 
-    const user = new User({ name, email, phone, password: hashedPassword, deliveryAddress });
+    const user = new User({ 
+      name: name.trim(), 
+      email: email.toLowerCase().trim(), 
+      phone: phone.trim(), 
+      password: hashedPassword, 
+      deliveryAddress 
+    });
     await user.save();
 
     const token = signToken(

@@ -16,8 +16,12 @@ const OrderSchema = new mongoose.Schema({
   razorpayPaymentId: { type: String, default: null },
   status: { type: String, default: 'Pending' },
   statusUpdatedAt: { type: Date },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
 });
+
+OrderSchema.index({ customerEmail: 1, createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ createdAt: -1 });
 
 const Order = mongoose.models.Order || mongoose.model('Order', OrderSchema, 'OrderRegistry');
 export default Order;

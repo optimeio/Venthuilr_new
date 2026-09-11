@@ -5,6 +5,33 @@ import User from '@/models/User';
 import { requireAuth, requireAdmin } from '@/lib/auth';
 import { restoreStock } from '@/lib/inventory';
 
+export async function GET(request, { params }) {
+  try {
+    const auth = requireAuth(request);
+    if (auth.error) {
+      return NextResponse.json({ msg: auth.error }, { status: auth.status });
+    }
+
+    await connectDB();
+    const { id } = await params;
+
+    const order = await Order.findById(id).lean();
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // Allow user if admin or matching customer email
+    if (!auth.user.isAdmin && order.customerEmail?.toLowerCase() !== auth.user.email?.toLowerCase()) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    return NextResponse.json(order);
+  } catch (err) {
+    console.error('Order get error:', err);
+    return NextResponse.json({ error: 'Failed to retrieve order' }, { status: 500 });
+  }
+}
+
 export async function PUT(request, { params }) {
   try {
     const auth = requireAuth(request);
@@ -15,7 +42,7 @@ export async function PUT(request, { params }) {
     await connectDB();
     const { id } = await params;
     const body = await request.json();
-    const { status, action } = body;
+    let { status, action } = body;
 
     const order = await Order.findById(id);
     if (!order) {
@@ -29,7 +56,7 @@ export async function PUT(request, { params }) {
         return NextResponse.json({ error: 'Unauthorized to cancel this order' }, { status: 403 });
       }
 
-      if (order.status !== 'Pending' && order.status !== 'Processing') {
+      if (order.status !== 'Pending' && order.status !== 'Processing' && order.status !== 'Confirmed') {
         return NextResponse.json({ error: 'Order is already being shipped or completed.' }, { status: 400 });
       }
 
@@ -47,7 +74,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 });
     }
 
-    const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
+    const validStatuses = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
     if (!validStatuses.includes(status)) {
       return NextResponse.json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` }, { status: 400 });
     }

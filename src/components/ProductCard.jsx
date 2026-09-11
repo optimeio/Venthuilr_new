@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useUIModal } from '@/components/Providers';
 import { ShoppingBag, Eye, Star, Check, Heart, ArrowRight } from 'lucide-react';
 import './ProductCard.css';
 
 export default function ProductCard({ product, onQuickView, onBuyNow }) {
+  const router = useRouter();
   const { addToCart, setIsCartOpen } = useCart();
   const uiModal = useUIModal?.() || null;
   const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0] || null);
@@ -16,8 +18,9 @@ export default function ProductCard({ product, onQuickView, onBuyNow }) {
   if (!product) return null;
 
   const price = selectedVariant?.price ?? product.price ?? 0;
-  const originalPrice = Math.round(price * 1.25);
-  const savings = originalPrice - price;
+  const originalPrice = product.originalPrice || Math.round(price * 1.25);
+  const savings = Math.max(0, originalPrice - price);
+  const discountPercent = product.discountPercent || (originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 20);
   const imageUrl = product.images?.[0] || product.imageUrl;
   const hasVariants = product.variants?.length > 0;
 
@@ -34,14 +37,8 @@ export default function ProductCard({ product, onQuickView, onBuyNow }) {
     setIsCartOpen(false);
     if (onBuyNow) {
       onBuyNow(product, selectedVariant);
-    } else if (uiModal?.openCheckout) {
-      const shippingFee = price >= 499 ? 0 : 49;
-      uiModal.openCheckout({
-        grandTotal: price + shippingFee,
-        discount: 0,
-        appliedCoupon: null,
-        shippingFee
-      });
+    } else {
+      router.push('/checkout');
     }
   };
 
@@ -61,7 +58,9 @@ export default function ProductCard({ product, onQuickView, onBuyNow }) {
           <span className="organic-tag">
             {product.badge || '100% Organic'}
           </span>
-          <span className="discount-tag">20% OFF</span>
+          {discountPercent > 0 && (
+            <span className="discount-tag">{discountPercent}% OFF</span>
+          )}
         </div>
 
         {/* Wishlist Floating Button */}

@@ -1,26 +1,48 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resendApiKey = process.env.RESEND_API_KEY || 're_JEn7Uw8p_ArWkoKr8hp25NpMqye7zAFu5';
-const resend = new Resend(resendApiKey);
+// Configure Nodemailer with Direct Gmail SMTP (Google SPF & DKIM Authenticated)
+const emailUser = (process.env.EMAIL_USER || 'theventhulir@gmail.com').trim();
+const emailPass = (process.env.EMAIL_PASS || 'wcky ijfw tqgx yivb').replace(/\s+/g, '');
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // SSL
+  auth: {
+    user: emailUser,
+    pass: emailPass,
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
 
 export async function sendEmail({ to, subject, html, text }) {
-  try {
-    const { data, error } = await resend.emails.send({
-      from: `Venthulir Organic <onboarding@resend.dev>`,
-      to: Array.isArray(to) ? to : [to],
-      subject,
-      html: html || `<p>${text || ''}</p>`,
-    });
+  const recipient = Array.isArray(to) ? to.join(',') : to;
 
-    if (error) {
-      console.error('❌ Resend Email Error:', error);
-      return { success: false, error: error.message };
+  // Clean, high-deliverability transactional headers
+  const mailOptions = {
+    from: `"Venthulir Organic" <${emailUser}>`,
+    replyTo: emailUser,
+    to: recipient,
+    subject,
+    text: text || '',
+    html: html || `<p>${text || ''}</p>`,
+    headers: {
+      'X-Priority': '1',
+      'X-MSMail-Priority': 'High',
+      'Importance': 'high',
+      'Auto-Submitted': 'auto-generated',
+      'X-Auto-Response-Suppress': 'All'
     }
+  };
 
-    console.log('✅ Email sent successfully via Resend. ID:', data?.id);
-    return { success: true, data };
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Direct Gmail SMTP delivered to Primary Inbox! MessageId:', info.messageId);
+    return { success: true, messageId: info.messageId };
   } catch (err) {
-    console.error('❌ Resend Dispatch Exception:', err);
+    console.error('❌ Gmail SMTP Delivery Error:', err.message);
     return { success: false, error: err.message };
   }
 }

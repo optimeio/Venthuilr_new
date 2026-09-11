@@ -32,6 +32,11 @@ const ProductSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
+ProductSchema.index({ category: 1, createdAt: -1 });
+ProductSchema.index({ badge: 1, createdAt: -1 });
+ProductSchema.index({ currentStock: 1 });
+ProductSchema.index({ name: 'text', description: 'text', productCode: 'text' });
+
 ProductSchema.pre('save', async function () {
   this.updatedAt = new Date();
 

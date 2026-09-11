@@ -26,11 +26,14 @@ export const AuthProvider = ({ children }) => {
           const u = await res.json();
           const freshUser = {
             id: u._id || u.id,
+            _id: u._id || u.id,
             name: u.name,
             email: u.email,
             phone: u.phone,
-            isAdmin: u.isAdmin,
-            deliveryAddress: u.deliveryAddress
+            isAdmin: Boolean(u.isAdmin),
+            isEmailVerified: u.isEmailVerified ?? true,
+            deliveryAddress: u.deliveryAddress || { address: '', city: '', state: 'Tamil Nadu', zipCode: '' },
+            createdAt: u.createdAt
           };
           setUser(freshUser);
           setIsAuthenticated(true);
@@ -64,7 +67,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         localStorage.setItem('venthulir_token', data.token);
         localStorage.setItem('venthulir_user', JSON.stringify(data.user));
-        return { success: true };
+        return { success: true, user: data.user };
       }
       return { success: false, msg: data.msg || 'Login failed' };
     } catch {
@@ -178,8 +181,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (data) => {
-    setUser(data);
-    localStorage.setItem('venthulir_user', JSON.stringify(data));
+    setUser((prev) => {
+      const merged = { ...prev, ...data };
+      if (data.deliveryAddress && prev?.deliveryAddress) {
+        merged.deliveryAddress = { ...prev.deliveryAddress, ...data.deliveryAddress };
+      }
+      localStorage.setItem('venthulir_user', JSON.stringify(merged));
+      return merged;
+    });
   };
 
   return (

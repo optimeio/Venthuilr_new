@@ -3,37 +3,33 @@
 import React, { useState, useEffect } from 'react';
 import './Preloader.css';
 
-export default function Preloader({ onComplete, minDuration = 2200 }) {
-  const [stage, setStage] = useState('drawing'); // 'drawing' -> 'bloomed' -> 'reveal' -> 'done'
+export default function Preloader({ onComplete, minDuration = 600 }) {
+  const [stage, setStage] = useState('drawing');
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    // Stage 1: Initial Sprout & Draw (0 to 900ms)
-    const t1 = setTimeout(() => {
-      setStage('bloomed');
-    }, 900);
+    // If already shown in this tab session, skip immediately
+    if (typeof window !== 'undefined' && sessionStorage.getItem('venthulir_preloader_seen')) {
+      setHidden(true);
+      if (onComplete) onComplete();
+      return;
+    }
 
-    // Stage 2: Logo Shimmer & Typography Reveal (900ms to 1800ms)
-    const t2 = setTimeout(() => {
-      setStage('reveal');
-    }, 1800);
-
-    // Stage 3: Smooth Exit Curtain (2200ms)
+    const t1 = setTimeout(() => setStage('bloomed'), 180);
+    const t2 = setTimeout(() => setStage('reveal'), 380);
     const t3 = setTimeout(() => {
       setStage('done');
+      setHidden(true);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('venthulir_preloader_seen', '1');
+      }
       if (onComplete) onComplete();
     }, minDuration);
-
-    // Stage 4: Unmount from DOM (2600ms)
-    const t4 = setTimeout(() => {
-      setHidden(true);
-    }, minDuration + 450);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
-      clearTimeout(t4);
     };
   }, [minDuration, onComplete]);
 

@@ -124,6 +124,22 @@ export default function CartDrawer({ onCheckout }) {
             <button className="btn-primary checkout-cta" onClick={() => onCheckout({ grandTotal, discount, appliedCoupon, shippingFee })}>
               Proceed to Checkout →
             </button>
+
+            <div style={{ textAlign: 'center', marginTop: '10px' }}>
+              <a
+                href="/cart"
+                onClick={() => setIsCartOpen(false)}
+                style={{
+                  fontSize: '0.84rem',
+                  fontWeight: 750,
+                  color: '#0f3d2a',
+                  textDecoration: 'underline',
+                  cursor: 'pointer'
+                }}
+              >
+                View Detailed Cart Page →
+              </a>
+            </div>
           </div>
         )}
       </div>

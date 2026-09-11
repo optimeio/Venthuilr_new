@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, createContext, useContext } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider, useCart } from '@/context/CartContext';
-import Preloader from '@/components/Preloader';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -27,7 +27,16 @@ function ProvidersInner({ children }) {
   const [checkoutData, setCheckoutData] = useState(null);
   const { setIsCartOpen } = useCart();
 
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith('/admin');
+  const isProfileRoute = pathname?.startsWith('/profile') || pathname?.startsWith('/account');
+
   useEffect(() => {
+    // Disable smooth-scroll hijacker on Admin and Profile dashboards so inner dual-pane scrolling works natively
+    if (isAdminRoute || isProfileRoute) {
+      return;
+    }
+
     const lenis = new Lenis({
       lerp: 0.08,
       smoothWheel: true,
@@ -48,29 +57,38 @@ function ProvidersInner({ children }) {
       gsap.ticker.remove(updateLenis);
       lenis.destroy();
     };
-  }, []);
+  }, [isAdminRoute, isProfileRoute]);
+
+  const router = useRouter();
 
   const openCheckout = (cartSummary) => {
     setIsCartOpen(false);
-    setCheckoutData(cartSummary);
+    router.push('/checkout');
+  };
+
+  const hideFooter = isAdminRoute || 
+    pathname?.startsWith('/login') || 
+    pathname?.startsWith('/register') || 
+    pathname?.startsWith('/profile') || 
+    pathname?.startsWith('/account');
+
+  const handleOpenAuth = () => {
+    router.push('/login');
   };
 
   return (
-    <UIModalContext.Provider value={{ setAuthOpen, openCheckout }}>
-      <Preloader minDuration={2200} />
-      <Navbar
-        onAuthOpen={() => setAuthOpen(true)}
-      />
+    <UIModalContext.Provider value={{ setAuthOpen: handleOpenAuth, openCheckout }}>
+      {!isAdminRoute && (
+        <Navbar
+          onAuthOpen={handleOpenAuth}
+        />
+      )}
 
-      <CartDrawer onCheckout={openCheckout} />
+      {!isAdminRoute && <CartDrawer onCheckout={openCheckout} />}
 
       <main>{children}</main>
 
-      <Footer />
-
-      {authOpen && (
-        <AuthModal onClose={() => setAuthOpen(false)} />
-      )}
+      {!hideFooter && <Footer />}
 
       {checkoutData && (
         <CheckoutModal
@@ -78,7 +96,7 @@ function ProvidersInner({ children }) {
           onClose={() => setCheckoutData(null)}
           onAuthOpen={() => {
             setCheckoutData(null);
-            setAuthOpen(true);
+            handleOpenAuth();
           }}
         />
       )}

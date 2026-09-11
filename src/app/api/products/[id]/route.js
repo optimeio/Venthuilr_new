@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
 import { requireAdmin } from '@/lib/auth';
+import { invalidateProductCache } from '@/lib/cache';
 
 const STOCK_FIELDS_EXCLUDE = '-initialStock -currentStock -updatedAt';
 
@@ -16,7 +17,9 @@ export async function GET(request, { params }) {
       return NextResponse.json({ msg: 'Product not found' }, { status: 404 });
     }
 
-    return NextResponse.json(product);
+    return NextResponse.json(product, {
+      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' }
+    });
   } catch (err) {
     console.error('API Get Product Detail Error:', err);
     return NextResponse.json({ error: 'Server Error' }, { status: 500 });
@@ -39,6 +42,9 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ msg: 'Product not found' }, { status: 404 });
     }
 
+    // Purge cached catalog
+    invalidateProductCache();
+
     return NextResponse.json(product);
   } catch (err) {
     console.error('API Update Product Error:', err);
@@ -59,6 +65,9 @@ export async function DELETE(request, { params }) {
     if (!product) {
       return NextResponse.json({ msg: 'Product not found' }, { status: 404 });
     }
+
+    // Purge cached catalog
+    invalidateProductCache();
 
     return NextResponse.json({ msg: 'Product deleted successfully' });
   } catch (err) {

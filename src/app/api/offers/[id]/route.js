@@ -3,6 +3,21 @@ import connectDB from '@/lib/db';
 import Offer from '@/models/Offer';
 import { requireAdmin } from '@/lib/auth';
 
+export async function GET(request, { params }) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    const offer = await Offer.findById(id);
+    if (!offer) {
+      return NextResponse.json({ error: 'Offer not found' }, { status: 404 });
+    }
+    return NextResponse.json(offer);
+  } catch (err) {
+    console.error('API Get Offer Error:', err);
+    return NextResponse.json({ error: 'Server Error' }, { status: 500 });
+  }
+}
+
 export async function PUT(request, { params }) {
   try {
     const auth = requireAdmin(request);
@@ -12,25 +27,17 @@ export async function PUT(request, { params }) {
 
     await connectDB();
     const { id } = await params;
-    const fields = await request.json();
-    const offer = await Offer.findById(id);
+    const body = await request.json();
 
-    if (!offer) return NextResponse.json({ error: 'Offer not found.' }, { status: 404 });
+    const offer = await Offer.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    if (!offer) {
+      return NextResponse.json({ error: 'Offer not found' }, { status: 404 });
+    }
 
-    if (fields.price) fields.price = parseFloat(fields.price);
-    if (fields.offerPrice) fields.offerPrice = parseFloat(fields.offerPrice);
-    if (fields.stock !== undefined) fields.stock = parseInt(fields.stock, 10);
-    if (fields.rating !== undefined) fields.rating = parseFloat(fields.rating);
-    if (fields.startDate) fields.startDate = new Date(fields.startDate);
-    if (fields.endDate) fields.endDate = new Date(fields.endDate);
-
-    Object.assign(offer, fields);
-    await offer.save();
-
-    return NextResponse.json({ msg: 'Offer updated successfully', offer });
+    return NextResponse.json(offer);
   } catch (err) {
     console.error('API Update Offer Error:', err);
-    return NextResponse.json({ error: 'Failed to update offer.' }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Server Error' }, { status: 500 });
   }
 }
 
@@ -43,11 +50,14 @@ export async function DELETE(request, { params }) {
 
     await connectDB();
     const { id } = await params;
-    await Offer.findByIdAndDelete(id);
+    const offer = await Offer.findByIdAndDelete(id);
+    if (!offer) {
+      return NextResponse.json({ error: 'Offer not found' }, { status: 404 });
+    }
 
-    return NextResponse.json({ msg: 'Offer deleted successfully.' });
+    return NextResponse.json({ msg: 'Offer deleted successfully' });
   } catch (err) {
     console.error('API Delete Offer Error:', err);
-    return NextResponse.json({ error: 'Failed to delete offer.' }, { status: 500 });
+    return NextResponse.json({ error: 'Server Error' }, { status: 500 });
   }
 }

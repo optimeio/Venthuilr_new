@@ -515,73 +515,22 @@ export default function HomePage({ onCheckout }) {
   const productsTrackRef = useRef(null);
   const progressFillRef = useRef(null);
 
-  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth 120 FPS)
-  useEffect(() => {
-    const section = productsSectionRef.current;
-    const track = productsTrackRef.current;
-    if (!section || !track) return;
-
-    const ctx = gsap.context(() => {
-      const getScrollAmount = () => {
-        const trackWidth = track.scrollWidth;
-        const parentWidth = track.parentElement ? track.parentElement.clientWidth : window.innerWidth;
-        return -(trackWidth - parentWidth + 30);
-      };
-
-      const timeline = gsap.timeline();
-
-      // Initial comfortable pause before horizontal slide starts so 1st product stays 100% visible
-      timeline.to(track, {
-        x: 0,
-        duration: 0.1,
-        ease: 'none'
-      }).to(track, {
-        x: getScrollAmount,
-        ease: 'power1.inOut',
-        duration: 1
-      });
-
-      ScrollTrigger.create({
-        id: 'products-horizontal-scroll',
-        trigger: section,
-        start: 'top top',
-        end: () => {
-          const distance = track.scrollWidth - (track.parentElement ? track.parentElement.clientWidth : window.innerWidth);
-          return `+=${Math.max(1600, distance * 1.3)}`;
-        },
-        pin: true,
-        anticipatePin: 1,
-        fastScrollEnd: true,
-        animation: timeline,
-        scrub: 1.2, // Ultra-smooth 1:1 hardware accelerated momentum
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          if (progressFillRef.current) {
-            progressFillRef.current.style.width = `${Math.max(12, self.progress * 100)}%`;
-          }
-        }
-      });
-    }, section);
-
-    const timer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 150);
-
-    return () => {
-      clearTimeout(timer);
-      ctx.revert();
-    };
-  }, [filteredProducts]);
+  // Smooth Horizontal Track Progress Updater
+  const handleTrackScroll = () => {
+    if (productsTrackRef.current && progressFillRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = productsTrackRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+      const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
+      progressFillRef.current.style.width = `${Math.max(12, Math.min(100, progress))}%`;
+    }
+  };
 
   // Smooth Navigation Arrow Controls
   const scrollProducts = (direction) => {
-    const st = ScrollTrigger.getById('products-horizontal-scroll');
-    if (st) {
-      const delta = direction === 'next' ? 0.22 : -0.22;
-      const targetProgress = Math.max(0, Math.min(1, st.progress + delta));
-      const targetScroll = st.start + targetProgress * (st.end - st.start);
-      window.scrollTo({
-        top: targetScroll,
+    if (productsTrackRef.current) {
+      const scrollOffset = direction === 'next' ? 340 : -340;
+      productsTrackRef.current.scrollBy({
+        left: scrollOffset,
         behavior: 'smooth'
       });
     }
@@ -1112,6 +1061,7 @@ export default function HomePage({ onCheckout }) {
               <div 
                 className="products-horizontal-track"
                 ref={productsTrackRef}
+                onScroll={handleTrackScroll}
               >
                 {filteredProducts.map((product) => (
                   <div key={product._id} className="product-horizontal-item">
@@ -1187,7 +1137,6 @@ export default function HomePage({ onCheckout }) {
                   className={`cat-bento-card-grande cat-grande-${cat.id}`}
                   onClick={() => {
                     setActiveCategory(cat.filterParam || cat.name);
-                    scrollToSection('products');
                   }}
                 >
                   <div className="cat-grande-ambient-glow" style={{ background: cat.accentGlow }} />
@@ -1219,7 +1168,14 @@ export default function HomePage({ onCheckout }) {
 
                     <div className="cat-grande-footer">
                       <span className="cat-grande-items-count">{cat.items}</span>
-                      <button className="btn-cat-grande-cta">
+                      <button 
+                        className="btn-cat-grande-cta"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveCategory(cat.filterParam || cat.name);
+                          scrollToSection('products');
+                        }}
+                      >
                         <span>Explore Collection</span>
                         <ArrowRight size={15} />
                       </button>
@@ -1262,7 +1218,6 @@ export default function HomePage({ onCheckout }) {
                   className={`cat-bento-card-compact cat-compact-${cat.id}`}
                   onClick={() => {
                     setActiveCategory(cat.filterParam || cat.name);
-                    scrollToSection('products');
                   }}
                 >
                   <div className="cat-compact-ambient-glow" style={{ background: cat.accentGlow }} />
@@ -1291,7 +1246,14 @@ export default function HomePage({ onCheckout }) {
 
                   <div className="cat-compact-footer">
                     <span className="cat-compact-count">{cat.items}</span>
-                    <div className="cat-compact-action">
+                    <div 
+                      className="cat-compact-action"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveCategory(cat.filterParam || cat.name);
+                        scrollToSection('products');
+                      }}
+                    >
                       <span>Shop Now</span>
                       <ArrowRight size={14} />
                     </div>

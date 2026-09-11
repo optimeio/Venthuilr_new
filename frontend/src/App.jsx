@@ -14,6 +14,7 @@ import AuthModal     from './components/AuthModal';
 import CheckoutModal from './components/CheckoutModal';
 import HomePage      from './pages/HomePage';
 import ProductsPage  from './pages/ProductsPage';
+import LoginPage     from './pages/LoginPage';
 import Footer        from './components/Footer';
 import Lenis         from 'lenis';
 import gsap          from 'gsap';
@@ -21,7 +22,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Endpoint Route Handler for /home, /categories, /story, /reviews, /contact, /cart, /signin
+// Endpoint Route Handler for /home, /categories, /story, /reviews, /contact, /cart
 function EndpointRouteHandler({ setAuthOpen, openCheckout }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,8 +47,6 @@ function EndpointRouteHandler({ setAuthOpen, openCheckout }) {
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else if (path === '/cart') {
       setIsCartOpen(true);
-    } else if (path === '/signin' || path === '/login' || path === '/auth') {
-      setAuthOpen(true);
     }
   }, [location.pathname]);
 
@@ -59,12 +58,29 @@ function EndpointRouteHandler({ setAuthOpen, openCheckout }) {
   );
 }
 
+function RedirectToPort3000({ target }) {
+  useEffect(() => {
+    window.location.href = `http://localhost:3000${target || '/admin'}`;
+  }, [target]);
+
+  return (
+    <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', color: '#0f3d2a' }}>
+      <p>Redirecting to Executive Admin Portal...</p>
+    </div>
+  );
+}
+
 function MainApp() {
   const [authOpen,     setAuthOpen]     = useState(false);
   const [checkoutData, setCheckoutData] = useState(null);  // null = closed
 
+  const location = useLocation();
+  const isAdminOrProfile = location.pathname.startsWith('/admin') || location.pathname.startsWith('/profile');
+
   // Initialize Lenis Smooth Scrolling Engine synchronized with GSAP
   useEffect(() => {
+    if (isAdminOrProfile) return;
+
     const lenis = new Lenis({
       lerp: 0.08,
       smoothWheel: true,
@@ -85,7 +101,7 @@ function MainApp() {
       gsap.ticker.remove(updateLenis);
       lenis.destroy();
     };
-  }, []);
+  }, [isAdminOrProfile]);
 
   const { setIsCartOpen } = useCart();
 
@@ -93,6 +109,9 @@ function MainApp() {
     setIsCartOpen(false);
     setCheckoutData(cartSummary);
   };
+
+  const location = useLocation();
+  const hideFooter = ['/login', '/signin', '/register', '/auth', '/profile', '/account'].includes(location.pathname.toLowerCase().replace(/\/$/, ''));
 
   return (
     <>
@@ -112,13 +131,18 @@ function MainApp() {
         <Route path="/contact" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
         <Route path="/faq" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
         <Route path="/cart" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
-        <Route path="/signin" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
-        <Route path="/login" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
-        <Route path="/auth" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
+        <Route path="/login" element={<LoginPage initialTab="login" />} />
+        <Route path="/signin" element={<LoginPage initialTab="login" />} />
+        <Route path="/register" element={<LoginPage initialTab="register" />} />
+        <Route path="/auth" element={<LoginPage initialTab="login" />} />
+        <Route path="/admin/*" element={<RedirectToPort3000 target="/admin" />} />
+        <Route path="/admin" element={<RedirectToPort3000 target="/admin" />} />
+        <Route path="/profile" element={<RedirectToPort3000 target="/profile" />} />
+        <Route path="/account" element={<RedirectToPort3000 target="/profile" />} />
         <Route path="*" element={<EndpointRouteHandler setAuthOpen={setAuthOpen} openCheckout={openCheckout} />} />
       </Routes>
 
-      <Footer />
+      {!hideFooter && <Footer />}
 
       {authOpen && (
         <AuthModal onClose={() => setAuthOpen(false)} />

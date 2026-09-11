@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useUIModal } from '@/components/Providers';
 import { 
@@ -13,10 +14,12 @@ import './ProductsPage.css';
 
 const API = '/api';
 
-export default function ProductsPage({ onCheckout }) {
+function ProductsPageContent({ onCheckout }) {
   const { addToCart, setIsCartOpen } = useCart();
   const uiModal = useUIModal?.() || null;
   const handleCheckout = onCheckout || uiModal?.openCheckout;
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [loading, setLoading] = useState(false);
@@ -29,31 +32,105 @@ export default function ProductsPage({ onCheckout }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [zoomState, setZoomState] = useState({ isZoomed: false, x: 50, y: 50 });
 
+  // Sync state from URL query params (e.g. ?category=Spice%20Powders or ?search=oil)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+    const cat = searchParams?.get('category');
+    const search = searchParams?.get('search');
+    if (cat) {
+      setActiveCategory(cat);
+    } else {
+      setActiveCategory('All');
+    }
+    if (search) {
+      setSearchQuery(search);
+    }
+  }, [searchParams]);
 
-  useEffect(() => {
-    fetch(`${API}/products`)
-      .then((res) => res.json())
-      .then((data) => {
+  const handleZoomMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    setZoomState({ isZoomed: true, x, y });
+  };
+
+  const handleZoomMouseLeave = () => {
+    setZoomState({ isZoomed: false, x: 50, y: 50 });
+  };
+
+  const handleOpenQuickView = (product) => {
+    setQuickViewProduct(product);
+    setSelectedVariant(product.variants?.[0] || null);
+    setQuantity(1);
+    setActiveImgIndex(0);
+    setZoomState({ isZoomed: false, x: 50, y: 50 });
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handleCloseQuickView = () => {
+    setQuickViewProduct(null);
+    setSelectedVariant(null);
+    setQuantity(1);
+    setActiveImgIndex(0);
+    setZoomState({ isZoomed: false, x: 50, y: 50 });
+    document.body.style.overflow = '';
+  };
+
+  const fetchCatalog = useCallback(async (cat, query, sort) => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (cat && cat !== 'All') params.set('category', cat);
+      if (query && query.trim()) params.set('search', query.trim());
+      if (sort) params.set('sort', sort);
+      params.set('limit', '48');
+
+      const res = await fetch(`${API}/products?${params.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
         if (data && Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products);
-        } else if (Array.isArray(data) && data.length > 0) {
-          setProducts(data);
         }
-      })
-      .catch((err) => {
-        console.error('API product load fallback:', err);
-      });
+      }
+    } catch (err) {
+      console.error('Catalog fetch fallback:', err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const categories = ['All', ...new Set(products.map((p) => p.category).filter(Boolean))];
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCatalog(activeCategory, searchQuery, sortBy);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [activeCategory, searchQuery, sortBy, fetchCatalog]);
+
+  const categories = ['All', 'Spices', 'Cold-Pressed Oils', 'Masala Blends', 'Grains', 'Sweeteners', 'Herbal'];
+
+  const handleCategoryFilterClick = (catName) => {
+    setActiveCategory(catName);
+    if (catName === 'All') {
+      router.push('/products', { scroll: false });
+    } else {
+      router.push(`/products?category=${encodeURIComponent(catName)}`, { scroll: false });
+    }
+  };
 
   const filteredProducts = products
     .filter((p) => {
-      const matchCategory = activeCategory === 'All' || p.category === activeCategory;
+      let matchCategory = true;
+      if (activeCategory && activeCategory !== 'All' && activeCategory !== 'all') {
+        const catLower = activeCategory.toLowerCase();
+        const pCatLower = (p.category || '').toLowerCase();
+        matchCategory = 
+          pCatLower === catLower ||
+          (catLower.includes('spice') && pCatLower.includes('spice')) ||
+          (catLower.includes('masala') && pCatLower.includes('masala')) ||
+          (catLower.includes('oil') && pCatLower.includes('oil'));
+      }
+
       const matchSearch = !searchQuery || 
         p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -67,19 +144,6 @@ export default function ProductsPage({ onCheckout }) {
       if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
       return 0;
     });
-
-  const handleOpenQuickView = useCallback((product) => {
-    setQuickViewProduct(product);
-    setSelectedVariant(product.variants?.[0] || null);
-    setQuantity(1);
-    setActiveImgIndex(0);
-    document.body.style.overflow = 'hidden';
-  }, []);
-
-  const handleCloseQuickView = () => {
-    setQuickViewProduct(null);
-    document.body.style.overflow = '';
-  };
 
   const qvImages = quickViewProduct
     ? (quickViewProduct.images?.length ? quickViewProduct.images : [quickViewProduct.imageUrl].filter(Boolean))
@@ -111,12 +175,10 @@ export default function ProductsPage({ onCheckout }) {
       <section className="products-catalog-section">
         <div className="container">
           
-          {/* Controls Bar: Search, Category Tabs, Sort Filter */}
+          {/* Top Controls: Omnisearch & Sort */}
           <div className="catalog-toolbar">
-            
-            {/* Search Input */}
             <div className="catalog-search-wrapper">
-              <Search size={18} className="search-icon" />
+              <Search size={16} className="search-icon" />
               <input
                 type="text"
                 placeholder="Search oils, turmeric, chilli, sambar..."
@@ -125,6 +187,7 @@ export default function ProductsPage({ onCheckout }) {
               />
               {searchQuery && (
                 <button
+                  type="button"
                   className="search-clear-btn"
                   onClick={() => setSearchQuery('')}
                   aria-label="Clear search"
@@ -153,15 +216,20 @@ export default function ProductsPage({ onCheckout }) {
 
           {/* Category Filter Pills */}
           <div className="catalog-category-pills">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                className={`category-pill-btn ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const isPillActive = 
+                activeCategory === cat || 
+                (cat !== 'All' && activeCategory && pMatchesCategory(cat, activeCategory));
+              return (
+                <button
+                  key={cat}
+                  className={`category-pill-btn ${isPillActive ? 'active' : ''}`}
+                  onClick={() => handleCategoryFilterClick(cat)}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
 
           {/* Results Count & Active Filter Indicator */}
@@ -171,7 +239,7 @@ export default function ProductsPage({ onCheckout }) {
               <button 
                 className="btn-clear-filters"
                 onClick={() => {
-                  setActiveCategory('All');
+                  handleCategoryFilterClick('All');
                   setSearchQuery('');
                   setSortBy('featured');
                 }}
@@ -182,21 +250,15 @@ export default function ProductsPage({ onCheckout }) {
           </div>
 
           {/* Products Grid */}
-          {loading ? (
-            <div className="catalog-products-grid">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="product-skeleton-card" />
-              ))}
-            </div>
-          ) : filteredProducts.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <div className="catalog-empty-state">
-              <Package size={56} strokeWidth={1.2} />
+              <Package size={48} />
               <h3>No products match your criteria</h3>
               <p>Try clearing your search keyword or selecting a different category.</p>
               <button
                 className="btn-reset-catalog"
                 onClick={() => {
-                  setActiveCategory('All');
+                  handleCategoryFilterClick('All');
                   setSearchQuery('');
                 }}
               >
@@ -259,15 +321,28 @@ export default function ProductsPage({ onCheckout }) {
               
               {/* Product Gallery */}
               <div className="quickview-gallery">
-                <div className="quickview-main-img-wrap">
+                <div 
+                  className={`quickview-main-img-wrap ${zoomState.isZoomed ? 'is-zoomed' : ''}`}
+                  onMouseMove={handleZoomMouseMove}
+                  onMouseLeave={handleZoomMouseLeave}
+                >
                   <img
                     src={qvImages[activeImgIndex] || quickViewProduct.imageUrl}
                     alt={quickViewProduct.name}
                     className="quickview-main-img"
+                    style={{
+                      transformOrigin: `${zoomState.x}% ${zoomState.y}%`,
+                      transform: zoomState.isZoomed ? 'scale(2.35)' : 'scale(1)',
+                      transition: zoomState.isZoomed ? 'transform 0.08s ease-out' : 'transform 0.3s ease',
+                    }}
                   />
                   {quickViewProduct.badge && (
                     <span className="quickview-badge-tag">{quickViewProduct.badge}</span>
                   )}
+                  <div className={`qv-zoom-badge ${zoomState.isZoomed ? 'hide' : ''}`}>
+                    <Search size={11} />
+                    <span>Hover to Zoom</span>
+                  </div>
                 </div>
 
                 {qvImages.length > 1 && (
@@ -365,19 +440,7 @@ export default function ProductsPage({ onCheckout }) {
                         }
                         handleCloseQuickView();
                         setIsCartOpen(false);
-                        const price = qvPrice * quantity;
-                        const shippingFee = price >= 499 ? 0 : 49;
-                        if (handleCheckout) {
-                          handleCheckout({
-                            grandTotal: price + shippingFee,
-                            discount: 0,
-                            appliedCoupon: null,
-                            shippingFee
-                          });
-                        } else {
-                          const checkoutBtn = document.querySelector('.checkout-cta') || document.querySelector('.btn-checkout');
-                          if (checkoutBtn) checkoutBtn.click();
-                        }
+                        router.push('/checkout');
                       }}
                       type="button"
                     >
@@ -406,5 +469,20 @@ export default function ProductsPage({ onCheckout }) {
       )}
 
     </div>
+  );
+}
+
+function pMatchesCategory(cat1, cat2) {
+  if (!cat1 || !cat2) return false;
+  const c1 = cat1.toLowerCase();
+  const c2 = cat2.toLowerCase();
+  return c1 === c2 || (c1.includes('spice') && c2.includes('spice')) || (c1.includes('masala') && c2.includes('masala')) || (c1.includes('oil') && c2.includes('oil'));
+}
+
+export default function ProductsPage(props) {
+  return (
+    <Suspense fallback={<div className="products-page-root"><div className="container" style={{ padding: '60px 0', textAlign: 'center' }}>Loading catalog...</div></div>}>
+      <ProductsPageContent {...props} />
+    </Suspense>
   );
 }

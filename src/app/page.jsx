@@ -35,22 +35,6 @@ const API = '/api';
 
 const CATEGORIES = [
   { 
-    id: 'oils',
-    name: 'Cold-Pressed Oils',  
-    tamilName: 'மரச்செக்கு எண்ணெய்கள்',
-    iconType: 'droplets',
-    badge: 'Traditional Chekku < 40°C',
-    desc: 'Extracted in native Vaagai wood mortars without heat or artificial solvents. Retains live natural antioxidants & rich ancestral aroma.',
-    items: '4 Virgin Oils Available',
-    filterParam: 'Cold-Pressed Oils',
-    image: imgOilGingelly,
-    secondaryImg: imgOilCoconut,
-    origin: 'Native Tamil Nadu Chekku',
-    highlights: ['Gingelly (Sesame)', 'Groundnut', 'Pure Coconut', 'Sunflower'],
-    isFeatured: true,
-    accentGlow: 'rgba(217, 119, 6, 0.15)'
-  },
-  { 
     id: 'spices',
     name: 'Single-Origin Spices',      
     tamilName: 'கைமுறை மசாலா பொடிகள்',
@@ -65,6 +49,22 @@ const CATEGORIES = [
     highlights: ['Salem Turmeric', 'Guntur Red Chilli', 'Erode Coriander', 'Black Pepper'],
     isFeatured: true,
     accentGlow: 'rgba(220, 38, 38, 0.15)'
+  },
+  { 
+    id: 'oils',
+    name: 'Cold-Pressed Oils',  
+    tamilName: 'மரச்செக்கு எண்ணெய்கள்',
+    iconType: 'droplets',
+    badge: 'Traditional Chekku < 40°C',
+    desc: 'Extracted in native Vaagai wood mortars without heat or artificial solvents. Retains live natural antioxidants & rich ancestral aroma.',
+    items: '4 Virgin Oils Available',
+    filterParam: 'Cold-Pressed Oils',
+    image: imgOilGingelly,
+    secondaryImg: imgOilCoconut,
+    origin: 'Native Tamil Nadu Chekku',
+    highlights: ['Gingelly (Sesame)', 'Groundnut', 'Pure Coconut', 'Sunflower'],
+    isFeatured: true,
+    accentGlow: 'rgba(217, 119, 6, 0.15)'
   },
   { 
     id: 'masalas',
@@ -502,11 +502,23 @@ export default function HomePage({ onCheckout }) {
     return matchCategory && matchSearch;
   });
 
-  // Quick View Modal State
+  // Quick View Modal State & Zoom Lens
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [zoomState, setZoomState] = useState({ isZoomed: false, x: 50, y: 50 });
+
+  const handleZoomMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    setZoomState({ isZoomed: true, x, y });
+  };
+
+  const handleZoomMouseLeave = () => {
+    setZoomState({ isZoomed: false, x: 50, y: 50 });
+  };
 
   // Reviews Carousel
   const [currentReview, setCurrentReview] = useState(0);
@@ -523,73 +535,22 @@ export default function HomePage({ onCheckout }) {
   const productsTrackRef = useRef(null);
   const progressFillRef = useRef(null);
 
-  // GSAP Vertical-to-Horizontal ScrollTrigger Pinned Animation (Silky Smooth 120 FPS)
-  useEffect(() => {
-    const section = productsSectionRef.current;
-    const track = productsTrackRef.current;
-    if (!section || !track) return;
-
-    const ctx = gsap.context(() => {
-      const getScrollAmount = () => {
-        const trackWidth = track.scrollWidth;
-        const parentWidth = track.parentElement ? track.parentElement.clientWidth : window.innerWidth;
-        return -(trackWidth - parentWidth + 30);
-      };
-
-      const timeline = gsap.timeline();
-
-      // Initial comfortable pause before horizontal slide starts so 1st product stays 100% visible
-      timeline.to(track, {
-        x: 0,
-        duration: 0.1,
-        ease: 'none'
-      }).to(track, {
-        x: getScrollAmount,
-        ease: 'power1.inOut',
-        duration: 1
-      });
-
-      ScrollTrigger.create({
-        id: 'products-horizontal-scroll',
-        trigger: section,
-        start: 'top top',
-        end: () => {
-          const distance = track.scrollWidth - (track.parentElement ? track.parentElement.clientWidth : window.innerWidth);
-          return `+=${Math.max(1600, distance * 1.3)}`;
-        },
-        pin: true,
-        anticipatePin: 1,
-        fastScrollEnd: true,
-        animation: timeline,
-        scrub: 1.2, // Ultra-smooth 1:1 hardware accelerated momentum
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          if (progressFillRef.current) {
-            progressFillRef.current.style.width = `${Math.max(12, self.progress * 100)}%`;
-          }
-        }
-      });
-    }, section);
-
-    const timer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 150);
-
-    return () => {
-      clearTimeout(timer);
-      ctx.revert();
-    };
-  }, [filteredProducts]);
+  // Smooth Horizontal Track Progress Updater
+  const handleTrackScroll = () => {
+    if (productsTrackRef.current && progressFillRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = productsTrackRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+      const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
+      progressFillRef.current.style.width = `${Math.max(12, Math.min(100, progress))}%`;
+    }
+  };
 
   // Smooth Navigation Arrow Controls
   const scrollProducts = (direction) => {
-    const st = ScrollTrigger.getById('products-horizontal-scroll');
-    if (st) {
-      const delta = direction === 'next' ? 0.22 : -0.22;
-      const targetProgress = Math.max(0, Math.min(1, st.progress + delta));
-      const targetScroll = st.start + targetProgress * (st.end - st.start);
-      window.scrollTo({
-        top: targetScroll,
+    if (productsTrackRef.current) {
+      const scrollOffset = direction === 'next' ? 340 : -340;
+      productsTrackRef.current.scrollBy({
+        left: scrollOffset,
         behavior: 'smooth'
       });
     }
@@ -600,8 +561,9 @@ export default function HomePage({ onCheckout }) {
     fetch(`${API}/products`)
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setProducts(data);
+        const list = Array.isArray(data) ? data : (data?.products || []);
+        if (list.length > 0) {
+          setProducts(list);
         }
       })
       .catch((err) => {
@@ -666,12 +628,14 @@ export default function HomePage({ onCheckout }) {
     setSelectedVariant(product.variants?.[0] || null);
     setQuantity(1);
     setActiveImgIndex(0);
+    setZoomState({ isZoomed: false, x: 50, y: 50 });
     document.body.style.overflow = 'hidden';
   }, []);
 
   // Close Quick View
   const handleCloseQuickView = () => {
     setQuickViewProduct(null);
+    setZoomState({ isZoomed: false, x: 50, y: 50 });
     document.body.style.overflow = '';
   };
 
@@ -739,14 +703,16 @@ export default function HomePage({ onCheckout }) {
               {/* Action Buttons */}
               <div className="hero-actions-row">
                 <button 
+                  type="button"
                   className="btn-hero-primary" 
-                  onClick={() => scrollToSection('products')}
+                  onClick={() => router.push('/products')}
                 >
                   <Leaf size={16} className="btn-leaf-icon" />
                   <span>Shop Pure Harvest</span>
                   <ArrowRight size={17} className="btn-arrow-icon" />
                 </button>
                 <button 
+                  type="button"
                   className="btn-hero-secondary" 
                   onClick={() => scrollToSection('story')}
                 >
@@ -831,8 +797,10 @@ export default function HomePage({ onCheckout }) {
                   
                   {/* Navigation Arrows */}
                   <button 
+                    type="button"
                     className="artisan-nav-arrow left"
                     onClick={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       setCurrentHeroSlide((prev) => (prev - 1 + activeHeroSlides.length) % activeHeroSlides.length);
                     }}
@@ -842,8 +810,10 @@ export default function HomePage({ onCheckout }) {
                   </button>
 
                   <button 
+                    type="button"
                     className="artisan-nav-arrow right"
                     onClick={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       setCurrentHeroSlide((prev) => (prev + 1) % activeHeroSlides.length);
                     }}
@@ -907,10 +877,11 @@ export default function HomePage({ onCheckout }) {
                               <div className="artisan-spice-sub">{slide.subtitle}</div>
                             </div>
                             <button 
+                              type="button"
                               className="artisan-quick-btn"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                scrollToSection('products');
+                                router.push('/products');
                               }}
                               title="Shop Now"
                             >
@@ -923,6 +894,7 @@ export default function HomePage({ onCheckout }) {
                             {activeHeroSlides.map((s, dotIdx) => (
                               <button
                                 key={s.id}
+                                type="button"
                                 className={`artisan-mini-dot ${dotIdx === currentHeroSlide ? 'active' : ''}`}
                                 style={dotIdx === currentHeroSlide ? { background: slide.spiceColor } : undefined}
                                 onClick={(e) => {
@@ -942,16 +914,24 @@ export default function HomePage({ onCheckout }) {
                 {/* Category Switcher Tabs (Powders vs Oils) placed below the box */}
                 <div className="artisan-category-switcher">
                   <button 
+                    type="button"
                     className={`artisan-switch-btn ${heroTab === 'powders' ? 'active' : ''}`}
-                    onClick={() => handleCategorySwitch('powders')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCategorySwitch('powders');
+                    }}
                   >
                     <Sparkles size={14} className="switch-icon" />
                     <span>Spice Powders</span>
                     <span className="switcher-count-badge">5</span>
                   </button>
                   <button 
+                    type="button"
                     className={`artisan-switch-btn ${heroTab === 'oils' ? 'active' : ''}`}
-                    onClick={() => handleCategorySwitch('oils')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCategorySwitch('oils');
+                    }}
                   >
                     <Droplets size={14} className="switch-icon" />
                     <span>Cold-Pressed Oils</span>
@@ -1072,7 +1052,7 @@ export default function HomePage({ onCheckout }) {
               {/* View All Products Button */}
               <button
                 className="btn-view-all-header"
-                onClick={() => navigate('/products')}
+                onClick={() => router.push('/products')}
               >
                 <span>View All ({products.length})</span>
                 <ArrowRight size={15} />
@@ -1120,6 +1100,7 @@ export default function HomePage({ onCheckout }) {
               <div 
                 className="products-horizontal-track"
                 ref={productsTrackRef}
+                onScroll={handleTrackScroll}
               >
                 {filteredProducts.map((product) => (
                   <div key={product._id} className="product-horizontal-item">
@@ -1134,7 +1115,7 @@ export default function HomePage({ onCheckout }) {
                 <div className="product-horizontal-item product-view-all-card-wrapper">
                   <div 
                     className="product-view-all-card"
-                    onClick={() => navigate('/products')}
+                    onClick={() => router.push('/products')}
                   >
                     <div className="view-all-icon-circle">
                       <Sparkles size={24} color="#c9a84c" />
@@ -1175,13 +1156,13 @@ export default function HomePage({ onCheckout }) {
             </div>
             <h2 className="section-headline">Shop By Category</h2>
             <p className="section-subtitle">
-              From traditional wood-pressed cooking oils to aromatic stone-ground spices and native heirloom grains, 
+              From aromatic stone-ground spices and pure single-origin powders to traditional wood cold-pressed oils and native heirloom grains, 
               discover pure staples crafted for wholesome living.
             </p>
             <div className="cat-header-badges">
-              <span className="cat-header-tag">🌱 100% Farm-Direct</span>
-              <span className="cat-header-tag">🪵 Wood-Pressed &lt;40°C</span>
               <span className="cat-header-tag">✨ Stone-Ground Spices</span>
+              <span className="cat-header-tag">🪵 Wood-Pressed &lt;40°C</span>
+              <span className="cat-header-tag">🌱 100% Farm-Direct</span>
               <span className="cat-header-tag">🛡️ Zero Additives</span>
             </div>
           </div>
@@ -1195,7 +1176,6 @@ export default function HomePage({ onCheckout }) {
                   className={`cat-bento-card-grande cat-grande-${cat.id}`}
                   onClick={() => {
                     setActiveCategory(cat.filterParam || cat.name);
-                    scrollToSection('products');
                   }}
                 >
                   <div className="cat-grande-ambient-glow" style={{ background: cat.accentGlow }} />
@@ -1227,7 +1207,14 @@ export default function HomePage({ onCheckout }) {
 
                     <div className="cat-grande-footer">
                       <span className="cat-grande-items-count">{cat.items}</span>
-                      <button className="btn-cat-grande-cta">
+                      <button 
+                        className="btn-cat-grande-cta"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveCategory(cat.filterParam || cat.name);
+                          scrollToSection('products');
+                        }}
+                      >
                         <span>Explore Collection</span>
                         <ArrowRight size={15} />
                       </button>
@@ -1264,7 +1251,7 @@ export default function HomePage({ onCheckout }) {
 
             {/* Bottom Row: 4 Heritage Bento Cards */}
             <div className="cat-bento-row-heritage">
-              {CATEGORIES.filter(c => !c.isFeatured).map((cat) => (
+              {CATEGORIES.filter(c => !c.isFeatured).map((cat, idx) => (
                 <div
                   key={cat.id || cat.name}
                   className={`cat-bento-card-compact cat-compact-${cat.id}`}
@@ -1273,36 +1260,48 @@ export default function HomePage({ onCheckout }) {
                     scrollToSection('products');
                   }}
                 >
-                  <div className="cat-compact-ambient-glow" style={{ background: cat.accentGlow }} />
-
                   <div className="cat-compact-header">
-                    <div className="cat-compact-icon-box">
+                    <div className="cat-compact-icon-emblem">
                       {cat.iconType === 'flame' && <Flame size={20} />}
                       {cat.iconType === 'wheat' && <Wheat size={20} />}
                       {cat.iconType === 'sun' && <Sun size={20} />}
                       {cat.iconType === 'leaf' && <Leaf size={20} />}
                     </div>
-                    <span className="cat-compact-badge">{cat.badge}</span>
+                    <div className="cat-compact-meta-pill">
+                      <span className="cat-compact-meta-dot" />
+                      <span>{cat.badge}</span>
+                    </div>
                   </div>
 
                   <div className="cat-compact-body">
-                    <span className="cat-compact-tamil">{cat.tamilName}</span>
-                    <h4 className="cat-compact-title">{cat.name}</h4>
+                    <div className="cat-compact-title-wrap">
+                      <span className="cat-compact-tamil-label">{cat.tamilName}</span>
+                      <h4 className="cat-compact-heading">{cat.name}</h4>
+                      <div className="cat-compact-divider" />
+                    </div>
                     <p className="cat-compact-desc">{cat.desc}</p>
                     
                     <div className="cat-compact-highlights">
-                      {cat.highlights?.slice(0, 3).map((hl, idx) => (
-                        <span key={idx} className="cat-compact-pill">{hl}</span>
+                      {cat.highlights?.slice(0, 3).map((hl, hIdx) => (
+                        <span key={hIdx} className="cat-compact-pill">{hl}</span>
                       ))}
                     </div>
                   </div>
 
                   <div className="cat-compact-footer">
                     <span className="cat-compact-count">{cat.items}</span>
-                    <div className="cat-compact-action">
+                    <button 
+                      type="button"
+                      className="cat-compact-action-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveCategory(cat.filterParam || cat.name);
+                        scrollToSection('products');
+                      }}
+                    >
                       <span>Shop Now</span>
-                      <ArrowRight size={14} />
-                    </div>
+                      <ArrowRight size={13} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -1328,58 +1327,78 @@ export default function HomePage({ onCheckout }) {
           <div className="why-choose-grid">
             <div className="why-card">
               <div className="why-card-top">
-                <span className="why-number">01</span>
                 <div className="why-icon-bubble">
-                  <Leaf size={22} />
+                  <Leaf size={20} />
                 </div>
+                <span className="why-number">01</span>
               </div>
+              <span className="why-card-tag">Ethical Agriculture</span>
               <h3 className="why-title">Direct Farm Sourcing</h3>
               <p className="why-desc">
                 We work directly with 50+ certified organic farmers across Tamil Nadu, 
                 eliminating middlemen and ensuring fair livelihoods.
               </p>
+              <div className="why-card-highlight">
+                <CheckCircle2 size={13} />
+                <span>50+ Partner Native Farms</span>
+              </div>
             </div>
 
             <div className="why-card">
               <div className="why-card-top">
-                <span className="why-number">02</span>
                 <div className="why-icon-bubble">
-                  <Droplets size={22} />
+                  <Droplets size={20} />
                 </div>
+                <span className="why-number">02</span>
               </div>
+              <span className="why-card-tag">Artisan Extraction</span>
               <h3 className="why-title">Traditional Chekku Press</h3>
               <p className="why-desc">
                 Extracted using native Vaagai wood mortars under 40°C. 
                 Natural enzymes, vitamins, and authentic aroma remain untouched.
               </p>
+              <div className="why-card-highlight">
+                <CheckCircle2 size={13} />
+                <span>Zero Heat &bull; Native Vaagai Wood</span>
+              </div>
             </div>
 
             <div className="why-card">
               <div className="why-card-top">
-                <span className="why-number">03</span>
                 <div className="why-icon-bubble">
-                  <ShieldCheck size={22} />
+                  <ShieldCheck size={20} />
                 </div>
+                <span className="why-number">03</span>
               </div>
+              <span className="why-card-tag">Clean Label Purity</span>
               <h3 className="why-title">Zero Chemicals &amp; Additives</h3>
               <p className="why-desc">
                 No chemical refining, bleaching, artificial fragrances, or paraffin. 
                 100% single-origin natural goodness in every batch.
               </p>
+              <div className="why-card-highlight">
+                <CheckCircle2 size={13} />
+                <span>Lab-Tested Zero Contaminants</span>
+              </div>
             </div>
 
             <div className="why-card">
               <div className="why-card-top">
-                <span className="why-number">04</span>
                 <div className="why-icon-bubble">
-                  <Package size={22} />
+                  <Package size={20} />
                 </div>
+                <span className="why-number">04</span>
               </div>
+              <span className="why-card-tag">Peak Freshness</span>
               <h3 className="why-title">Fresh Small-Batch Packing</h3>
               <p className="why-desc">
                 Bottled and packed fresh to order in food-grade, leak-proof containers 
                 to preserve peak nutritional potency.
               </p>
+              <div className="why-card-highlight">
+                <CheckCircle2 size={13} />
+                <span>Food-Grade UV-Safe Seal</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1814,16 +1833,33 @@ export default function HomePage({ onCheckout }) {
 
             <div className="quickview-grid">
               
-              {/* Product Gallery */}
+              {/* Product Gallery with Hover Zoom Magnifier */}
               <div className="quickview-gallery-side">
-                <div className="quickview-main-image-wrap">
+                <div 
+                  className={`quickview-main-image-wrap ${zoomState.isZoomed ? 'is-zoomed' : ''}`}
+                  onMouseMove={handleZoomMouseMove}
+                  onMouseLeave={handleZoomMouseLeave}
+                >
                   {qvImages[activeImgIndex] ? (
-                    <img src={qvImages[activeImgIndex]} alt={quickViewProduct.name} />
+                    <img 
+                      src={qvImages[activeImgIndex]} 
+                      alt={quickViewProduct.name}
+                      style={{
+                        transformOrigin: `${zoomState.x}% ${zoomState.y}%`,
+                        transform: zoomState.isZoomed ? 'scale(2.35)' : 'scale(1)',
+                        transition: zoomState.isZoomed ? 'transform 0.08s ease-out' : 'transform 0.3s ease',
+                      }} 
+                    />
                   ) : (
                     <div className="quickview-placeholder">
                       {quickViewProduct.name[0]}
                     </div>
                   )}
+
+                  <div className={`qv-zoom-badge ${zoomState.isZoomed ? 'hide' : ''}`}>
+                    <Search size={12} />
+                    <span>Hover to Zoom</span>
+                  </div>
                 </div>
 
                 {qvImages.length > 1 && (

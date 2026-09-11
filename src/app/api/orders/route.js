@@ -6,6 +6,7 @@ import Coupon from '@/models/Coupon';
 import { reduceStock } from '@/lib/inventory';
 import { sendEmail } from '@/lib/email';
 import { requireAdmin } from '@/lib/auth';
+import { invalidateProductCache, invalidateStatsCache } from '@/lib/cache';
 
 export async function GET(request) {
   try {
@@ -101,6 +102,10 @@ export async function POST(request) {
     });
 
     await newOrder.save();
+
+    // Invalidate product and stats cache upon new order
+    invalidateProductCache();
+    invalidateStatsCache();
 
     // Send confirmation email asynchronously
     sendEmail({

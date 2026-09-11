@@ -274,19 +274,19 @@
   padding: 14px 20px;
   font-size: 0.95rem;
   font-weight: 800;
-  background: #113320;
+  background: linear-gradient(135deg, #c97a18 0%, #b45309 100%);
   color: #ffffff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 8px 20px rgba(17, 51, 32, 0.2);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.28);
 }
 
 .co-submit:hover {
-  background: #15803d;
+  background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(21, 128, 61, 0.28);
+  box-shadow: 0 10px 26px rgba(180, 83, 9, 0.38);
 }
 
 .co-auth-note {
